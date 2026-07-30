@@ -1,10 +1,22 @@
-export default function HomePage() {
+import Hero from "@/components/hero/Hero";
+import HowItWorks from "@/components/landing/HowItWorks";
+import Navbar from "@/components/navbar/Navbar";
+import GlimpseInside from "@/components/landing/GlimpseInside";
+import Features from "@/components/landing/Features";
+import CTA from "@/components/landing/CTA";
+import Footer from "@/components/landing/Footer";
+
+export default function Home() {
   return (
-    <main className="flex flex-col items-center justify-center min-h-[80vh] text-center px-4">
-      <h1 className="text-4xl font-bold">AI Capstone</h1>
-      <p className="mt-4 text-lg text-gray-600 max-w-xl">
-        Frontend AI Engineering Capstone — FlyRank.
-      </p>
-    </main>
+    <>
+      <Navbar />
+      <Hero />
+      <HowItWorks />
+      <GlimpseInside />
+      <Features/>
+      <CTA />
+      <Footer/>
+    
+    </>
   );
 }

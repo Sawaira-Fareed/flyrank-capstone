@@ -1,3 +1,30 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@400;500;600&family=JetBrains+Mono&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+
+@layer base {
+  body {
+    @apply font-body text-bloom-navy;
+    background: linear-gradient(135deg, #FFFBF5 0%, #F3EEFA 25%, #EEF2FF 50%, #FEF0F5 75%, #F0FDF4 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-white/70 backdrop-blur-md rounded-card shadow-glass border border-white/50;
+  }
+
+  .btn-primary {
+    @apply bg-gradient-to-r from-bloom-violet to-bloom-pink text-white font-semibold rounded-button px-6 py-3 shadow-glow hover:scale-105 transition-all duration-300;
+  }
+
+  .btn-secondary {
+    @apply bg-white/60 backdrop-blur-sm text-bloom-violet border border-bloom-violet/30 rounded-button px-6 py-3 hover:bg-bloom-violet/10 transition-all duration-300;
+  }
+}
