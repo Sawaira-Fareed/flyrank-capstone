@@ -21,7 +21,7 @@ export default function ProfilePage() {
       if (!authUser) { setLoading(false); return; }
 
       const { data: profile } = await supabase.from("users").select("*").eq("email", authUser.email).single();
-      setUser(profile || { name: authUser.displayName || "Bloomer", email: authUser.email });
+     setUser(profile || { name: authUser.email?.split("@")[0] || "Bloomer", email: authUser.email || "" });
 
       if (profile) {
         const userStats = await getUserStats(profile.id);
