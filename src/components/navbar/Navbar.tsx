@@ -55,8 +55,9 @@ export default function Navbar() {
             <button className="flex items-center gap-1 font-medium text-slate-700 hover:text-violet-600 transition">
               Resources <ChevronDown size={16} />
             </button>
-             <Link href="/assignments" className="block px-4 py-2.5 text-sm text-slate-700 hover:bg-violet-50 hover:text-violet-600 rounded-t-xl transition">📋 Assignments</Link>
+            
             <div className="absolute top-full left-0 mt-2 w-48 rounded-xl bg-white/90 backdrop-blur-xl border border-white/50 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+             <Link href="/assignments" className="block px-4 py-2.5 text-sm text-slate-700 hover:bg-violet-50 hover:text-violet-600 rounded-t-xl transition">📋 Assignments</Link>
               <Link href="/playground" className="block px-4 py-2.5 text-sm text-slate-700 hover:bg-violet-50 hover:text-violet-600 rounded-t-xl transition">🧩 Playground</Link>
               <Link href="/health" className="block px-4 py-2.5 text-sm text-slate-700 hover:bg-violet-50 hover:text-violet-600 transition">❤️ Health Check</Link>
               <Link href="/chat" className="block px-4 py-2.5 text-sm text-slate-700 hover:bg-violet-50 hover:text-violet-600 rounded-b-xl transition">💬 AI Chat</Link>
