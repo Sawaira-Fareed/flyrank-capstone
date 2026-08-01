@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 const navItems = [
   { label: "Features", href: "#features" },
   { label: "How It Works", href: "#how-it-works" },
-  { label: "Pricing", href: "#cta" },
+  { label: "Glimpse Inside", href: "#glimpse-inside" },
 ];
 
 export default function Navbar() {
@@ -65,12 +65,12 @@ export default function Navbar() {
           </div>
         </nav>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-8">
           <Link href="/login" className="font-medium text-slate-700 hover:text-violet-600 transition text-sm lg:text-base">
             Log In
           </Link>
           <Link href="/signup">
-            <GradientButton>Start Growing 🌱</GradientButton>
+            <GradientButton>Start For Free </GradientButton>
           </Link>
         </div>
       </div>

@@ -36,8 +36,11 @@ export default function LoginPage() {
     if (!validate()) return;
     setLoading(true);
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      router.push("/garden");
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+// Also create/get Supabase user
+const { getOrCreateUser } = await import("@/lib/store");
+await getOrCreateUser(userCredential.user.email || email, userCredential.user.displayName || email.split("@")[0]);
+router.push("/garden");
     } catch (err: any) {
       setFirebaseError(err.message);
     } finally {
@@ -49,9 +52,11 @@ export default function LoginPage() {
     setGoogleLoading(true);
     setFirebaseError("");
     try {
-      const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
-      router.push("/garden");
+        const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+const { getOrCreateUser } = await import("@/lib/store");
+await getOrCreateUser(result.user.email || "", result.user.displayName || "Bloomer");
+router.push("/garden");
     } catch (err: any) {
       setFirebaseError(err.message);
     } finally {
@@ -81,7 +86,22 @@ export default function LoginPage() {
           className="hidden lg:flex items-center gap-6"
         >
           {/* Badges */}
-          <div className="flex flex-col gap-7">
+          <div className="flex flex-col gap-5">
+            {/* Back to Landing */}
+            <Link
+              href="/"
+              className="w-[210px] rounded-[20px] border border-white/50 bg-white/70 backdrop-blur-lg px-5 py-4 shadow-lg hover:scale-[1.03] transition flex items-center gap-3"
+              style={{ boxShadow: "0 12px 30px rgba(135,206,235,0.2)" }}
+            >
+              <div className="w-10 h-10 rounded-xl bg-[#87CEEB]/30 flex items-center justify-center text-xl">
+                🏠
+              </div>
+              <div>
+                <p className="text-sm font-bold text-[#312E81]">Back to Landing</p>
+                <p className="text-xs text-[#6B7280]">Return home</p>
+              </div>
+            </Link>
+
             {[
               { icon: "🔥", title: "15k+ Learners", sub: "Growing every day" },
               { icon: "🌱", title: "AI Mentor", sub: "Personal coding guide" },
@@ -217,7 +237,6 @@ export default function LoginPage() {
 
             {firebaseError && <p className="text-sm text-red-500 text-center">{firebaseError}</p>}
 
-        
             <div className="flex justify-center pt-1">
               <button
                 type="submit"
@@ -228,7 +247,6 @@ export default function LoginPage() {
               </button>
             </div>
           </form>
-          
 
           <p className="text-center text-sm text-[#6B7280] mt-6">
             Don't have an account?{" "}

@@ -1,5 +1,5 @@
 "use client";
-
+import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import GradientButton from "@/components/common/GradientButton";
@@ -45,9 +45,11 @@ export default function Hero() {
             </p>
 
             <div className="mt-10 flex gap-5">
+              <Link href="/signup">
               <GradientButton>
                 Start Growing 🌱
               </GradientButton>
+              </Link>
 
               <button className="rounded-full border border-slate-200 bg-white/80 px-7 py-3.5 font-medium backdrop-blur transition hover:bg-white">
                 ▶ Watch Demo

@@ -1,213 +1,250 @@
 "use client";
 
-import { motion } from "framer-motion";
 import Image from "next/image";
+import { Search, Bell, Plus, ArrowRight } from "lucide-react";
 
-function AuroraSeparator() {
-  return (
-    <div className="relative w-full h-8 my-3 overflow-hidden">
-      <svg
-        viewBox="0 0 400 32"
-        preserveAspectRatio="none"
-        className="absolute inset-0 w-full h-full"
-      >
-        <defs>
-          <linearGradient id="aurora1" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#c4b5fd" />
-            <stop offset="20%" stopColor="#f9a8d4" />
-            <stop offset="40%" stopColor="#fde68a" />
-            <stop offset="60%" stopColor="#67e8f9" />
-            <stop offset="80%" stopColor="#6ee7b7" />
-            <stop offset="100%" stopColor="#c4b5fd" />
-          </linearGradient>
-          <filter id="glow">
-            <feGaussianBlur stdDeviation="2" result="blur" />
-            <feMerge>
-              <feMergeNode in="blur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
-        </defs>
-        <motion.path
-          animate={{ d: [
-            "M0,16 Q50,4 100,14 T200,18 T300,12 T400,16 L400,32 L0,32 Z",
-            "M0,14 Q50,20 100,10 T200,16 T300,20 T400,14 L400,32 L0,32 Z",
-            "M0,18 Q50,8 100,16 T200,14 T300,18 T400,16 L400,32 L0,32 Z",
-            "M0,16 Q50,4 100,14 T200,18 T300,12 T400,16 L400,32 L0,32 Z",
-          ]}}
-          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-          fill="url(#aurora1)"
-          opacity="0.5"
-          filter="url(#glow)"
-        />
-      </svg>
-    </div>
-  );
-}
+const sparkles = [
+  { left: "5%", top: "8%", size: "2px", opacity: 0.4 },
+  { left: "15%", top: "20%", size: "3px", opacity: 0.5 },
+  { left: "25%", top: "5%", size: "2px", opacity: 0.3 },
+  { left: "35%", top: "15%", size: "4px", opacity: 0.6 },
+  { left: "45%", top: "25%", size: "2px", opacity: 0.35 },
+  { left: "55%", top: "10%", size: "3px", opacity: 0.5 },
+  { left: "65%", top: "18%", size: "2px", opacity: 0.4 },
+  { left: "75%", top: "6%", size: "4px", opacity: 0.55 },
+  { left: "85%", top: "22%", size: "2px", opacity: 0.3 },
+  { left: "92%", top: "12%", size: "3px", opacity: 0.45 },
+  { left: "8%", top: "90%", size: "2px", opacity: 0.4 },
+  { left: "30%", top: "85%", size: "3px", opacity: 0.5 },
+  { left: "50%", top: "92%", size: "2px", opacity: 0.35 },
+  { left: "70%", top: "88%", size: "4px", opacity: 0.5 },
+  { left: "88%", top: "95%", size: "2px", opacity: 0.4 },
+];
 
 export default function GlimpseInside() {
   return (
-    <section className="relative py-24 overflow-hidden">
-      {/* Galaxy Rainbow Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-violet-100 via-fuchsia-50 via-pink-50 via-cyan-50 via-mint-50 to-amber-50" />
-      
-      {/* Large galaxy blobs */}
-      <div className="absolute top-0 -left-20 w-[500px] h-[500px] rounded-full bg-gradient-to-br from-violet-300/30 via-fuchsia-300/20 to-transparent blur-[120px]" />
-      <div className="absolute top-1/3 -right-20 w-[400px] h-[400px] rounded-full bg-gradient-to-br from-cyan-300/30 via-mint-300/20 to-transparent blur-[120px]" />
-      <div className="absolute bottom-0 left-1/3 w-[600px] h-[300px] rounded-full bg-gradient-to-br from-pink-300/30 via-amber-200/20 to-transparent blur-[140px]" />
-      <div className="absolute top-1/2 left-0 w-[350px] h-[350px] rounded-full bg-gradient-to-br from-sky-300/25 via-violet-300/20 to-transparent blur-[100px]" />
+    <section id="glimpse-inside" className="relative py-24 overflow-hidden">
+      {/* Background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#FDF2F8] via-[#FFF5F5] to-[#EDE9FE]" />
+      <div className="absolute top-[-5%] left-[-5%] w-[500px] h-[500px] rounded-full bg-[#C4B5FD]/20 blur-[140px]" />
+      <div className="absolute bottom-[-5%] right-[-5%] w-[500px] h-[500px] rounded-full bg-[#F9A8D4]/15 blur-[140px]" />
 
-          {/* Floating stars - outer edges only */}
-      {[
-        "top-10 left-[2%] text-lg",
-        "top-32 right-[2%] text-sm",
-        "bottom-40 left-[3%] text-base",
-        "bottom-10 right-[3%] text-lg",
-        "top-1/2 left-[1%] text-sm",
-        "top-1/2 right-[1%] text-base",
-        "top-[20%] right-[4%] text-xs",
-        "bottom-[30%] left-[4%] text-base",
-        "top-[60%] right-[3%] text-lg",
-        "bottom-[10%] left-[2%] text-sm",
-      ].map((pos, i) => (
-        <motion.div
-          key={`star-${i}`}
-          animate={{ opacity: [0.3, 0.9, 0.3], scale: [0.8, 1.1, 0.8] }}
-          transition={{ duration: 3 + (i % 3), repeat: Infinity, delay: i * 0.4 }}
-          className={`absolute ${pos} z-0`}
-        >
-          ✨
-        </motion.div>
+      {/* Decorative leaves */}
+      <div className="absolute bottom-4 left-4 text-6xl lg:text-8xl opacity-50 pointer-events-none select-none">🍃</div>
+      <div className="absolute bottom-4 right-4 text-6xl lg:text-8xl opacity-50 pointer-events-none select-none">🍃</div>
+
+      {/* Sparkles */}
+      {sparkles.map((star, i) => (
+        <div
+          key={i}
+          className="absolute rounded-full bg-white"
+          style={{
+            width: star.size,
+            height: star.size,
+            left: star.left,
+            top: star.top,
+            opacity: star.opacity,
+            boxShadow: "0 0 5px rgba(255,255,255,0.7)",
+          }}
+        />
       ))}
 
-      {/* Floating flowers - outer edges */}
-      {[
-        "top-[5%] left-[6%] text-xl",
-        "top-[35%] right-[5%] text-lg",
-        "bottom-[20%] left-[5%] text-base",
-        "bottom-[5%] right-[6%] text-xl",
-        "top-[55%] left-[3%] text-lg",
-      ].map((pos, i) => (
-        <motion.div
-          key={`flower-${i}`}
-          animate={{ y: [-4, 5, -4], rotate: [0, 10, -8, 0], opacity: [0.4, 0.8, 0.4] }}
-          transition={{ duration: 5 + (i % 2), repeat: Infinity, delay: i * 0.6 }}
-          className={`absolute ${pos} z-0`}
-        >
-          🌸
-        </motion.div>
-      ))}
+      <div className="max-w-6xl mx-auto px-6 relative z-10">
+        <h2 className="text-center font-heading text-4xl lg:text-5xl font-bold text-[#312E81] mb-4">
+  <span className="bg-gradient-to-r from-violet-600 via-fuchsia-500 to-pink-500 bg-clip-text text-transparent">
+    A Glimpse Inside
+  </span>
+</h2>
 
-      {/* Floating hearts - outer edges */}
-      {[
-        "top-[18%] right-[8%] text-lg",
-        "top-[70%] left-[7%] text-xl",
-        "bottom-[15%] right-[7%] text-base",
-        "top-[45%] right-[3%] text-lg",
-        "bottom-[35%] left-[2%] text-xl",
-      ].map((pos, i) => (
-        <motion.div
-          key={`heart-${i}`}
-          animate={{ y: [3, -5, 3], rotate: [0, -8, 6, 0], opacity: [0.4, 0.8, 0.4] }}
-          transition={{ duration: 5.5 + (i % 2), repeat: Infinity, delay: i * 0.5 }}
-          className={`absolute ${pos} z-0`}
-        >
-          💖
-        </motion.div>
-      ))}
-      <div className="mx-auto max-w-6xl px-8 relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 25 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-16"
-        >
-          <h2 className="text-5xl font-bold text-slate-900">
-        
-            <span className="bg-gradient-to-r from-violet-600 via-fuchsia-500 to-pink-500 bg-clip-text text-transparent">
-              A Glimpse Inside
-            </span>
-          </h2>
-        </motion.div>
+        <h2 className="text-center font-heading text-4xl lg:text-5xl font-bold text-[#312E81] mb-2">
+          See BloomLab in action
+        </h2>
+        <p className="text-center text-[#6B7280] mb-12">
+          Your personalized learning journey, beautifully designed.
+        </p>
 
-        <div className="grid gap-16 lg:grid-cols-2">
-          {/* Card 1: Skill Map */}
-          <motion.div
-            initial={{ opacity: 0, x: -40 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="relative rounded-[32px] bg-white/80 backdrop-blur-xl shadow-2xl text-center flex flex-col p-[3px]"
-          >
-            <div className="absolute inset-0 rounded-[32px] bg-gradient-to-br from-violet-300 via-fuchsia-300 via-pink-300 via-cyan-300 via-mint-300 to-amber-200 opacity-70" />
-            <div className="absolute inset-0 rounded-[32px] bg-gradient-to-tr from-transparent via-white/40 to-transparent opacity-50" />
-            <div className="absolute inset-[3px] rounded-[29px] bg-white/90" />
+        {/* Dashboard Window */}
+        <div
+          className="rounded-[32px] border border-white/50 bg-white/25 backdrop-blur-xl shadow-2xl overflow-hidden"
+          style={{ boxShadow: "0 30px 80px rgba(167,139,250,0.2)" }}
+        >
+          {/* Top Bar */}
+          <div className="flex items-center justify-between px-6 py-4 border-b border-white/30 bg-white/20">
+            <div className="flex items-center gap-2">
+              <span className="text-xl">🌸</span>
+              <span className="font-heading font-bold text-[#312E81]">BloomLab</span>
+            </div>
+            <div className="flex items-center gap-4">
+              <Bell size={20} className="text-[#6B7280]" />
+              <div className="relative w-11 h-11 rounded-full overflow-hidden border-2 border-white/60 bg-[#C4B5FD]/20">
+  <Image src="/face.png" alt="Profile" fill className="object-cover scale-150" />
+</div>
+            </div>
+          </div>
 
-            <div className="relative z-10 rounded-[29px] p-5 flex flex-col">
-              <div className="flex justify-start mb-3">
-                <span className="inline-block rounded-full bg-gradient-to-r from-violet-100 to-pink-100 px-3 py-1 text-xs font-semibold text-violet-700">
-                  Your Skill Map
+          {/* Main Content */}
+          <div className="flex">
+            {/* Left Sidebar */}
+            <div className="hidden lg:flex flex-col w-52 p-4 border-r border-white/20 bg-white/10 gap-1">
+              
+              {[
+                { label: "My Garden", icon: "✦", active: true },
+                { label: "Projects", icon: "📁" },
+                { label: "Skill Map", icon: "🗺️" },
+                { label: "Learn", icon: "📖" },
+                { label: "Progress", icon: "📊" },
+                { label: "Settings", icon: "⚙️" },
+              ].map((item) => (
+                <div
+                  key={item.label}
+                  className={`flex items-center gap-3 px-3 py-2 rounded-xl text-sm cursor-pointer transition ${
+                    item.active
+                      ? "bg-[#8B5CF6]/15 text-[#7C3AED] font-semibold"
+                      : "text-[#6B7280] hover:bg-white/20"
+                  }`}
+                >
+                  <span>{item.icon}</span>
+                  <span>{item.label}</span>
+                </div>
+              ))}
+              <div className="mt-auto pt-4 border-t border-white/20">
+                <div className="flex items-center gap-3 px-3 py-2 rounded-xl bg-white/20">
+                <div className="relative w-11 h-11 rounded-full overflow-hidden bg-[#C4B5FD]/20">
+  <Image src="/face.png" alt="Elsa" fill className="object-cover scale-150" />
+</div>
+                  <div>
+                    <p className="text-xs font-semibold text-[#312E81]">Elsa</p>
+                    <p className="text-xs text-[#6B7280]">AI Mentor</p>
+                  </div>
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 ml-auto" />
+                </div>
+              </div>
+            </div>
+
+            {/* Center Content */}
+            <div className="flex-1 p-6">
+              <p className="text-sm text-[#6B7280]">Good evening, Blooming Coder! 👋</p>
+              <h2 className="font-heading text-2xl lg:text-3xl font-bold text-[#312E81] mt-1">
+                Let's grow something{" "}
+                <span className="bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] bg-clip-text text-transparent">
+                  amazing
+                </span>{" "}
+                today.
+              </h2>
+
+              <div className="mt-6 flex items-center gap-3">
+                <div className="flex-1 flex items-center gap-3 rounded-full border border-white/40 bg-white/40 backdrop-blur px-5 py-3">
+                  <Search size={18} className="text-[#6B7280]" />
+                  <input
+                    type="text"
+                    placeholder="What do you want to build today?"
+                    className="flex-1 bg-transparent text-sm text-[#312E81] outline-none placeholder:text-[#6B7280]/60"
+                    readOnly
+                  />
+                </div>
+                <button className="rounded-full bg-gradient-to-r from-[#8B5CF6] to-[#A78BFA] px-5 py-3 text-sm font-semibold text-white shadow-lg flex items-center gap-2 hover:scale-105 transition">
+                  Explore Ideas ✨
+                </button>
+              </div>
+
+              <p className="font-heading font-semibold text-[#312E81] mt-8 mb-4">Continue Learning</p>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div
+                  className="rounded-2xl border border-white/40 px-4 py-4 text-center"
+                  style={{
+                    background: "rgba(255,255,255,0.30)",
+                    backdropFilter: "blur(12px)",
+                    WebkitBackdropFilter: "blur(12px)",
+                    boxShadow: "0 8px 24px rgba(139,92,246,0.10)",
+                  }}
+                >
+                  <span className="text-3xl">🌤️</span>
+                  <h4 className="font-heading font-semibold text-[#312E81] mt-2">Weather App</h4>
+                  <p className="text-xs text-[#6B7280]">Day 7 of 12</p>
+                  <div className="mt-2 h-2 bg-[#C4B5FD]/30 rounded-full overflow-hidden">
+                    <div className="h-full w-[60%] bg-gradient-to-r from-[#8B5CF6] to-[#A78BFA] rounded-full" />
+                  </div>
+                  <p className="text-xs text-[#6B7280] mt-1">60%</p>
+                  <button className="mt-3 w-full rounded-full bg-gradient-to-r from-[#8B5CF6] to-[#A78BFA] py-2 text-xs font-semibold text-white flex items-center justify-center gap-1 hover:scale-105 transition">
+                    Continue Lesson <ArrowRight size={14} />
+                  </button>
+                </div>
+
+                <div
+                  className="rounded-2xl border border-white/40 px-4 py-4 text-center"
+                  style={{
+                    background: "rgba(255,255,255,0.30)",
+                    backdropFilter: "blur(12px)",
+                    WebkitBackdropFilter: "blur(12px)",
+                    boxShadow: "0 8px 24px rgba(236,72,153,0.10)",
+                  }}
+                >
+                  <span className="text-3xl">🎮</span>
+                  <h4 className="font-heading font-semibold text-[#312E81] mt-2">Snake Game</h4>
+                  <p className="text-xs text-[#6B7280]">Day 2 of 10</p>
+                  <div className="mt-2 h-2 bg-[#F9A8D4]/30 rounded-full overflow-hidden">
+                    <div className="h-full w-[20%] bg-gradient-to-r from-[#EC4899] to-[#F472B6] rounded-full" />
+                  </div>
+                  <p className="text-xs text-[#6B7280] mt-1">20%</p>
+                  <button className="mt-3 w-full rounded-full bg-gradient-to-r from-[#EC4899] to-[#F472B6] py-2 text-xs font-semibold text-white flex items-center justify-center gap-1 hover:scale-105 transition">
+                    Continue Lesson <ArrowRight size={14} />
+                  </button>
+                </div>
+
+                <div
+                  className="rounded-2xl border-2 border-dashed border-[#C4B5FD]/40 px-4 py-4 flex flex-col items-center justify-center text-center"
+                  style={{
+                    background: "rgba(255,255,255,0.15)",
+                    backdropFilter: "blur(12px)",
+                    WebkitBackdropFilter: "blur(12px)",
+                  }}
+                >
+                  <Plus size={32} className="text-[#8B5CF6]/60" />
+                  <p className="font-heading font-semibold text-[#8B5CF6] mt-2">Start New Project</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Sidebar */}
+            <div className="hidden lg:flex flex-col w-56 p-4 border-l border-white/20 bg-white/10 gap-4">
+              <div
+                className="rounded-2xl border border-white/40 bg-white/25 backdrop-blur-md p-4 text-center"
+                style={{ boxShadow: "0 8px 24px rgba(139,92,246,0.08)" }}
+              >
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-100/80 px-3 py-1 text-xs font-bold text-amber-700">
+                  🔥 7 Day Streak
                 </span>
               </div>
-<div className="absolute inset-0 -z-10 rounded-full bg-gradient-to-br from-violet-300/20 via-pink-300/20 to-sky-300/20 blur-3xl" />
-              <Image
-                src="/skillmap.png"
-                alt="Skill Map"
-                width={400}
-                height={200}
-                className="w-4/5 mx-auto h-auto object-contain rounded-2xl"
-              />
 
-              <AuroraSeparator />
-
-              <h3 className="mt-1 text-lg font-bold text-slate-900">
-                Your personalized learning path.
-              </h3>
-              <p className="mt-1 text-sm text-slate-500 leading-6">
-                We create a custom roadmap for your project
-                <br />
-                and guide you lesson by lesson.
-              </p>
-            </div>
-          </motion.div>
-
-          {/* Card 2: Elsa Guide */}
-          <motion.div
-            initial={{ opacity: 0, x: 40 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="relative rounded-[32px] bg-white/80 backdrop-blur-xl shadow-2xl text-center flex flex-col p-[3px]"
-          >
-            <div className="absolute inset-0 rounded-[32px] bg-gradient-to-br from-sky-300 via-violet-300 via-pink-300 via-peach-300 to-mint-300 opacity-70" />
-            <div className="absolute inset-0 rounded-[32px] bg-gradient-to-tl from-transparent via-white/40 to-transparent opacity-50" />
-            <div className="absolute inset-[3px] rounded-[29px] bg-white/90" />
-
-            <div className="relative z-10 rounded-[29px] p-5 flex flex-col">
-              <div className="flex justify-start mb-3">
-                <span className="inline-block rounded-full bg-gradient-to-r from-pink-100 to-rose-100 px-3 py-1 text-xs font-semibold text-pink-700">
-                  Today's Lesson with Elsa
-                </span>
+              <div
+                className="rounded-2xl border border-white/40 bg-white/25 backdrop-blur-md p-4"
+                style={{ boxShadow: "0 8px 24px rgba(139,92,246,0.08)" }}
+              >
+                <p className="text-xs font-semibold text-[#6B7280] uppercase">Today's Goal</p>
+                <p className="font-heading font-bold text-[#312E81] mt-1">Complete Lesson 2</p>
+                <p className="text-xs text-[#6B7280]">in JavaScript Basics</p>
+                <div className="mt-3 h-2 bg-[#C4B5FD]/30 rounded-full overflow-hidden">
+                  <div className="h-full w-[60%] bg-gradient-to-r from-[#8B5CF6] to-[#A78BFA] rounded-full" />
+                </div>
+                <p className="text-xs text-[#6B7280] mt-1">60%</p>
               </div>
-<div className="absolute inset-0 -z-10 rounded-full bg-gradient-to-br from-violet-300/20 via-pink-300/20 to-sky-300/20 blur-3xl" />
-              <Image
-                src="/guide.png"
-                alt="Elsa guiding a lesson"
-                width={400}
-                height={200}
-                className="w-4/5 mx-auto h-auto object-contain rounded-2xl"
-              />
 
-              <AuroraSeparator />
-
-              <h3 className="mt-1 text-lg font-bold text-slate-900">
-                Elsa guides every step.
-              </h3>
-              <p className="mt-1 text-sm text-slate-500 leading-6">
-                Your AI mentor explains, encourages,
-                <br />
-                and celebrates your progress.
-              </p>
+              <div
+                className="rounded-2xl border border-white/40 bg-white/25 backdrop-blur-md p-4 text-center flex-1 flex flex-col items-center justify-center"
+                style={{ boxShadow: "0 8px 24px rgba(139,92,246,0.08)" }}
+              >
+                <Image
+                  src="/glimpse-character.png"
+                  alt="Mascot"
+                  width={140}
+                  height={140}
+                  className="object-contain w-28 lg:w-36 h-auto mx-auto"
+                />
+                <p className="text-sm font-semibold text-[#312E81] mt-3">You're doing great!</p>
+                <p className="text-xs text-[#6B7280]">Keep blooming 🌸</p>
+              </div>
             </div>
-          </motion.div>
+          </div>
         </div>
       </div>
     </section>

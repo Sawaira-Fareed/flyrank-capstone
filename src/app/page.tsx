@@ -6,6 +6,7 @@ import Features from "@/components/landing/Features";
 import CTA from "@/components/landing/CTA";
 import Footer from "@/components/landing/Footer";
 
+
 export default function Home() {
   return (
     <>
@@ -14,6 +15,7 @@ export default function Home() {
       <HowItWorks />
       <GlimpseInside />
       <Features/>
+    
       <CTA />
       <Footer/>
     

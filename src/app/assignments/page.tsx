@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Image from "next/image";
 
 const assignments = [
   {
@@ -58,10 +58,45 @@ const assignments = [
 
 export default function AssignmentsPage() {
   return (
-    <div className="min-h-screen py-20 px-6"
-      style={{ background: "linear-gradient(135deg, #F7F3FF 0%, #FFF8FD 50%, #EEF8FF 100%)" }}
+    <div
+      className="relative min-h-screen py-20 px-6 overflow-hidden"
+      style={{
+        background: "linear-gradient(135deg, #87CEEB 0%, #B0E0E6 25%, #FFD6E8 50%, #FDF2F8 75%, #EDE9FE 100%)",
+      }}
     >
-      <div className="max-w-4xl mx-auto">
+      {/* Sky blobs */}
+      <div className="absolute top-[-5%] left-[-5%] w-[450px] h-[450px] rounded-full bg-white/30 blur-[140px]" />
+      <div className="absolute bottom-[-5%] right-[-5%] w-[400px] h-[400px] rounded-full bg-[#FFD6E8]/30 blur-[130px]" />
+      <div className="absolute top-[40%] left-[20%] w-[300px] h-[300px] rounded-full bg-[#C4B5FD]/20 blur-[120px]" />
+
+      {/* Natural stars */}
+      {Array.from({ length: 25 }).map((_, i) => (
+        <div
+          key={i}
+          className="absolute rounded-full bg-white"
+          style={{
+            width: `${2 + (i % 3)}px`,
+            height: `${2 + (i % 3)}px`,
+            left: `${Math.random() * 94}%`,
+            top: `${Math.random() * 94}%`,
+            opacity: 0.3 + Math.random() * 0.5,
+            boxShadow: "0 0 4px rgba(255,255,255,0.6)",
+          }}
+        />
+      ))}
+
+      {/* Elsa — centered vertically, right side, in front */}
+      <div className="absolute top-1/2 -translate-y-1/2 right-4 lg:right-8 w-[300px] lg:w-[420px] z-30">
+        <Image
+          src="/assignments.png"
+          alt="Elsa with assignments"
+          width={420}
+          height={560}
+          className="object-contain"
+        />
+      </div>
+
+      <div className="max-w-4xl mx-auto relative z-20 lg:mr-[320px]">
         <h1 className="font-heading text-4xl lg:text-5xl font-bold text-[#312E81] text-center mb-4">
           📋 FlyRank Assignments
         </h1>
@@ -69,14 +104,20 @@ export default function AssignmentsPage() {
           Frontend AI Engineering Track — All submissions with live demos and source code
         </p>
 
-        <div className="space-y-8">
+        <div className="space-y-6">
           {assignments.map((assignment, index) => (
             <div
               key={index}
-              className="rounded-2xl border border-white/50 bg-white/70 backdrop-blur-lg p-6 shadow-lg"
+              className="rounded-2xl border border-white/40 px-6 py-5"
+              style={{
+                background: "rgba(255,255,255,0.30)",
+                backdropFilter: "blur(18px)",
+                WebkitBackdropFilter: "blur(18px)",
+                boxShadow: "0 8px 32px rgba(135,206,235,0.15)",
+              }}
             >
               <div className="flex items-center gap-3 mb-4">
-                <span className="text-xs font-bold bg-[#8B5CF6] text-white px-3 py-1 rounded-full">
+                <span className="text-xs font-bold bg-gradient-to-r from-[#87CEEB] to-[#F472B6] text-white px-3 py-1 rounded-full">
                   {assignment.week}
                 </span>
                 <h2 className="font-heading text-xl font-bold text-[#312E81]">
@@ -90,7 +131,7 @@ export default function AssignmentsPage() {
                     href={link.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 rounded-full border border-[#C4B5FD]/40 bg-white/60 px-4 py-2 text-sm font-medium text-[#312E81] hover:bg-[#8B5CF6]/10 hover:border-[#8B5CF6]/40 transition"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-white/50 bg-white/50 backdrop-blur px-4 py-2 text-sm font-medium text-[#312E81] hover:bg-white/70 hover:border-[#87CEEB]/60 transition"
                   >
                     {link.url.includes("vercel.app") || link.url.includes("cinedrift") ? "🔗" : "📄"} {link.label}
                   </a>
