@@ -16,10 +16,10 @@ export default function Footer() {
 
           {/* Links */}
           <div className="flex flex-wrap justify-center gap-8 text-sm text-slate-500">
-            <Link href="#" className="hover:text-violet-600 transition">About</Link>
-            <Link href="#" className="hover:text-violet-600 transition">Privacy</Link>
-            <Link href="#" className="hover:text-violet-600 transition">Terms</Link>
-            <Link href="#" className="hover:text-violet-600 transition">Contact</Link>
+            <Link href="/#hero" className="hover:text-violet-600 transition">About</Link>
+          <Link href="/privacy" className="hover:text-violet-600 transition">Privacy</Link>
+            <Link href="/terms" className="hover:text-violet-600 transition">Terms</Link>
+            <Link href="/#cta" className="hover:text-violet-600 transition">Contact</Link>
           </div>
 
           {/* Social Icons */}

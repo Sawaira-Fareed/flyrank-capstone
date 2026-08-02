@@ -6,7 +6,7 @@ import GradientButton from "@/components/common/GradientButton";
 
 export default function Hero() {
   return (
-    <section className="relative overflow-hidden">
+    <section id="hero" className="relative overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 -z-10 bg-gradient-to-br from-violet-50 via-white to-pink-50" />
 
