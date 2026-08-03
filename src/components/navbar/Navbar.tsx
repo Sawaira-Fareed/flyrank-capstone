@@ -74,6 +74,7 @@ export default function Navbar() {
                 <Link href="/playground" className="block px-4 py-2.5 text-sm text-slate-700 hover:bg-violet-50 hover:text-violet-600 transition">🧩 Playground</Link>
                 <Link href="/health" className="block px-4 py-2.5 text-sm text-slate-700 hover:bg-violet-50 hover:text-violet-600 transition">❤️ Health Check</Link>
                 <Link href="/chat" className="block px-4 py-2.5 text-sm text-slate-700 hover:bg-violet-50 hover:text-violet-600 transition">💬 AI Chat</Link>
+                <Link href="/notes" className="block px-4 py-2.5 text-sm text-slate-700 hover:bg-violet-50 hover:text-violet-600 transition">📝 Notes</Link>
               </div>
             )}
           </div>
@@ -148,6 +149,7 @@ export default function Navbar() {
                       <Link href="/playground" onClick={() => setMobileOpen(false)} className="text-sm text-slate-600 hover:text-violet-600 py-1.5">🧩 Playground</Link>
                       <Link href="/health" onClick={() => setMobileOpen(false)} className="text-sm text-slate-600 hover:text-violet-600 py-1.5">❤️ Health Check</Link>
                       <Link href="/chat" onClick={() => setMobileOpen(false)} className="text-sm text-slate-600 hover:text-violet-600 py-1.5">💬 AI Chat</Link>
+                      <Link href="/notes" onClick={() => setMobileOpen(false)} className="text-sm text-slate-600 hover:text-violet-600 py-1.5">📝 Notes</Link>
                     </div>
                   )}
                 </div>

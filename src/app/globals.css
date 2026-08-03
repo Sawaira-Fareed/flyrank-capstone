@@ -28,3 +28,7 @@
     @apply bg-white/60 backdrop-blur-sm text-bloom-violet border border-bloom-violet/30 rounded-button px-6 py-3 hover:bg-bloom-violet/10 transition-all duration-300;
   }
 }
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-15px) rotate(5deg); }
+}

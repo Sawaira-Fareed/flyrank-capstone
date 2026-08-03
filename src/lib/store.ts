@@ -121,15 +121,17 @@ export async function updateProjectProgress(projectId: string, progress: number,
     .eq("id", projectId);
 }
 
-// Get user stats for dashboard
 export async function getUserStats(userId: string) {
   const supabase = createClient();
-  const { data: user } = await supabase.from("users").select("streak").eq("id", userId).single();
+  const { data: user } = await supabase.from("users").select("streak, xp").eq("id", userId).single();
   const { count: lessonsCount } = await supabase.from("lessons").select("*", { count: "exact", head: true }).eq("user_id", userId);
+  const { count: completedLessons } = await supabase.from("lessons").select("*", { count: "exact", head: true }).eq("user_id", userId).eq("completed", true);
   const { count: projectsCount } = await supabase.from("projects").select("*", { count: "exact", head: true }).eq("user_id", userId);
   return {
     streak: user?.streak || 0,
+    xp: user?.xp || 0,
     lessons: lessonsCount || 0,
+    completedLessons: completedLessons || 0,
     projects: projectsCount || 0,
   };
 }
