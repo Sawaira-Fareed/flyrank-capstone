@@ -32,6 +32,7 @@ export default function LearnPage() {
   const [bookmarkType, setBookmarkType] = useState("article");
   const [bookmarkSaving, setBookmarkSaving] = useState(false);
   const [bookmarkDone, setBookmarkDone] = useState(false);
+  const hasInitialized = useRef(false);  // ← ADD THIS
 
   const { messages, sendMessage, status, stop } = useChat({ transport: new DefaultChatTransport({ api: "/api/chat" }) });
 
@@ -50,7 +51,11 @@ export default function LearnPage() {
           const current = skills.find((s: any) => s.status === "active");
           if (current) {
             setActiveSkill(current);
-            setTimeout(() => sendMessage({ text: `I'm ready to learn "${current.name}" for my project "${active.title}". My project goal is: "${active.goal}". Please create a lesson.` }), 500);
+            // ← FIX: Only send initial message once
+            if (!hasInitialized.current) {
+              hasInitialized.current = true;
+              setTimeout(() => sendMessage({ text: `I'm ready to learn "${current.name}" for my project "${active.title}". My project goal is: "${active.goal}". Please create a lesson.` }), 500);
+            }
           }
         }
       }
@@ -58,6 +63,8 @@ export default function LearnPage() {
     };
     init();
   }, []);
+
+  // ... rest of the file stays EXACTLY the same
 
   useEffect(() => { if (!isRunning || timer <= 0) return; const i = setInterval(() => setTimer((t) => t - 1), 1000); return () => clearInterval(i); }, [isRunning, timer]);
   useEffect(() => { if (!userScrolledUp) bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, userScrolledUp]);
@@ -74,7 +81,19 @@ export default function LearnPage() {
       const skills = await getProjectSkills(activeProject.id);
       const next = skills.find((s: any) => s.status === "locked");
       if (next) await supabase.from("skills").update({ status: "active" }).eq("id", next.id);
-      await supabase.from("lessons").insert({ user_id: user.id, skill_id: activeSkill.id, content: `Completed: ${activeSkill.name}`, score: 100, completed: true, completed_at: new Date().toISOString() });
+      
+      // Save lesson with full chat messages
+      await supabase.from("lessons").insert({ 
+        user_id: user.id, 
+        skill_id: activeSkill.id, 
+        title: activeSkill.name,
+        content: `Completed: ${activeSkill.name}`,
+        messages: messages,
+        score: 100, 
+        completed: true, 
+        completed_at: new Date().toISOString() 
+      });
+      
       const done = skills.filter((s: any) => s.status === "completed").length + 1;
       await updateProjectProgress(activeProject.id, Math.round((done / skills.length) * 100), activeProject.current_day + 1);
       setLessonCompleted(true); setIsRunning(false);

@@ -96,19 +96,10 @@ export default function ArchivePage() {
 
       <div className="space-y-2 lg:space-y-4">
         {activeTab === "lessons" && (
-          data?.lessons?.filter((l: any) => !search || l.title?.toLowerCase().includes(search.toLowerCase())).length === 0 ? (
+          data?.lessons?.filter((l: any) => !search || (l.title || "").toLowerCase().includes(search.toLowerCase())).length === 0 ? (
             <EmptyState icon="📖" message="No completed lessons yet." cta="Start Learning" href="/learn" img="/assignments.png" />
-          ) : data?.lessons?.filter((l: any) => !search || l.title?.toLowerCase().includes(search.toLowerCase())).map((lesson: any) => (
-            <motion.div key={lesson.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-              className="rounded-2xl border border-white/40 p-2.5 lg:p-4 flex items-center gap-2 lg:gap-3"
-              style={{ background: "rgba(255,255,255,0.25)", backdropFilter: "blur(14px)", boxShadow: "0 8px 24px rgba(139,92,246,0.06)" }}>
-              <div className="w-8 h-8 lg:w-11 lg:h-11 rounded-xl bg-[#C4B5FD]/20 flex items-center justify-center text-base lg:text-xl shrink-0">📖</div>
-              <div className="flex-1 min-w-0">
-                <h3 className="font-heading font-semibold text-[#312E81] text-[11px] lg:text-sm truncate">{lesson.title || "Untitled"}</h3>
-                <p className="text-[9px] lg:text-xs text-[#6B7280]">{lesson.completed_at ? new Date(lesson.completed_at).toLocaleDateString() : ""} — {lesson.score || 0}%</p>
-              </div>
-              <button className="rounded-full bg-[#8B5CF6]/10 px-2.5 py-1.5 text-[10px] lg:text-xs font-semibold text-[#8B5CF6] hover:bg-[#8B5CF6]/20 transition shrink-0">Review</button>
-            </motion.div>
+          ) : data?.lessons?.filter((l: any) => !search || (l.title || "").toLowerCase().includes(search.toLowerCase())).map((lesson: any) => (
+            <LessonCard key={lesson.id} lesson={lesson} />
           ))
         )}
 
@@ -187,6 +178,51 @@ export default function ArchivePage() {
     </div>
   );
 }
+
+/// ─── Lesson Card with expandable chat review ───
+function LessonCard({ lesson }: { lesson: any }) {
+  const [expanded, setExpanded] = useState(false);
+  const chatMessages = lesson.messages || [];
+
+  return (
+    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+      className="rounded-2xl border border-white/40 p-2.5 lg:p-4"
+      style={{ background: "rgba(255,255,255,0.25)", backdropFilter: "blur(14px)", boxShadow: "0 8px 24px rgba(139,92,246,0.06)" }}>
+      <div className="flex items-center gap-2 lg:gap-3">
+        <div className="w-8 h-8 lg:w-11 lg:h-11 rounded-xl bg-[#C4B5FD]/20 flex items-center justify-center text-base lg:text-xl shrink-0">📖</div>
+        <div className="flex-1 min-w-0">
+          <h3 className="font-heading font-semibold text-[#312E81] text-[11px] lg:text-sm truncate">{lesson.title || "Untitled Lesson"}</h3>
+          <p className="text-[9px] lg:text-xs text-[#6B7280]">{lesson.completed_at ? new Date(lesson.completed_at).toLocaleDateString() : ""} — {lesson.score || 0}%</p>
+        </div>
+        <button 
+          onClick={() => setExpanded(!expanded)}
+          className="rounded-full bg-[#8B5CF6]/10 px-2.5 py-1.5 text-[10px] lg:text-xs font-semibold text-[#8B5CF6] hover:bg-[#8B5CF6]/20 transition shrink-0">
+          {expanded ? "Hide" : "Review"}
+        </button>
+      </div>
+      {expanded && (
+        <div className="mt-3 pt-3 border-t border-white/30">
+          {chatMessages.length === 0 ? (
+            <p className="text-[11px] text-[#6B7280] italic">No chat history saved for this lesson.</p>
+          ) : (
+            <div className="space-y-3 max-h-[400px] overflow-y-auto">
+              {chatMessages.map((msg: any, i: number) => (
+                <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+                  <div className={`max-w-[85%] rounded-2xl px-3 py-2 text-[11px] lg:text-xs ${msg.role === "user" ? "bg-gradient-to-r from-[#8B5CF6] to-[#A78BFA] text-white" : "bg-white/60 backdrop-blur text-[#312E81] border border-white/40"}`}>
+                    {msg.parts?.map((part: any, j: number) => 
+                      part.type === "text" ? <p key={j} className="whitespace-pre-wrap">{part.text}</p> : null
+                    ) || (typeof msg.content === "string" ? <p className="whitespace-pre-wrap">{msg.content}</p> : null)}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </motion.div>
+  );
+}
+
 
 function EmptyState({ icon, message, cta, href, img }: { icon: string; message: string; cta: string; href: string; img: string }) {
   return (

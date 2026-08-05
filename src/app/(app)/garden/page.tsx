@@ -49,25 +49,60 @@ export default function GardenPage() {
     init();
   }, [loadData]);
 
-  const handleCreate = async () => {
+   const handleCreate = async () => {
     if (!newGoal.trim() || !user) return;
     setCreating(true);
     try {
       const project = await createProject(user.id, newGoal.trim());
       if (project) {
         try {
-          const res = await fetch("/api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ messages: [{ role: "user", content: `[SKILL_MAP_REQUEST] ${newGoal.trim()}` }] }) });
-          const reader = res.body?.getReader(); const decoder = new TextDecoder(); let fullText = "";
-          if (reader) { while (true) { const { done, value } = await reader.read(); if (done) break; fullText += decoder.decode(value, { stream: true }); } }
+          const res = await fetch("/api/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              messages: [
+                {
+                  role: "user",
+                  content: `[SKILL_MAP_REQUEST] Generate a skill map for a project called "${newGoal.trim()}". The project goal is: "${newGoal.trim()}". Return ONLY a JSON array of skills.`,
+                },
+              ],
+            }),
+          });
+
+          if (!res.ok) throw new Error(`API returned ${res.status}`);
+
+          const fullText = await res.text();
+          let skills = [];
           const jsonMatch = fullText.match(/\[[\s\S]*\]/);
           if (jsonMatch) {
-            const skills = JSON.parse(jsonMatch[0]);
-            await supabase.from("skills").insert(skills.map((s: any, i: number) => ({ project_id: project.id, name: s.name, description: s.description, days: s.days || 2, status: i === 0 ? "active" : "locked", sort_order: i })));
+            try {
+              skills = JSON.parse(jsonMatch[0]);
+            } catch (parseError) {
+              console.error("Failed to parse skills JSON:", parseError);
+            }
           }
-        } catch {}
-        setNewGoal(""); await loadData(user.id);
+
+          if (skills.length > 0) {
+            await supabase.from("skills").insert(
+              skills.map((s: any, i: number) => ({
+                project_id: project.id,
+                name: s.name,
+                description: s.description || "",
+                days: s.days || 2,
+                status: i === 0 ? "active" : "locked",
+                sort_order: i,
+              }))
+            );
+          }
+        } catch (aiError) {
+          console.error("AI skill generation failed:", aiError);
+        }
+        setNewGoal("");
+        await loadData(user.id);
       }
-    } finally { setCreating(false); }
+    } finally {
+      setCreating(false);
+    }
   };
 
   const activeProjects = projects.filter((p) => p.status === "active");

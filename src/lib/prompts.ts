@@ -40,6 +40,28 @@ Do NOT teach the lesson yet.
 Finish with one encouraging sentence asking if they're ready to begin.
 `;
 
+export const SKILL_MAP_REQUEST_PROMPT = `
+The user wants to generate a skill map for their project.
+
+You MUST respond with ONLY a valid JSON array. No markdown, no explanation, no other text.
+
+The JSON array must follow this exact structure:
+[
+  {
+    "name": "Skill Name",
+    "description": "Brief description of what will be learned",
+    "days": 2
+  }
+]
+
+Rules:
+- Generate 6-10 skills that logically build on each other
+- First skill should be foundational/basics
+- Each skill should have "days" between 1-3
+- Description should be 5-10 words max
+- Output ONLY the JSON array, nothing else
+`;
+
 export const LESSON_PROMPT = `
 Teach one skill for the user's project.
 

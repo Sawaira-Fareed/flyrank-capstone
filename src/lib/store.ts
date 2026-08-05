@@ -71,21 +71,30 @@ export async function getUserProjects(userId: string): Promise<Project[]> {
 }
 
 // Create a new project
+// Create a new project
 export async function createProject(userId: string, goal: string): Promise<Project | null> {
   const supabase = createClient();
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("projects")
     .insert({
       user_id: userId,
       title: goal,
       goal,
+      progress: 0,
+      current_day: 1,
+      total_days: 30,
       status: "active",
     })
     .select()
     .single();
+  
+  if (error) {
+    console.error("Failed to create project:", error);
+    return null;
+  }
+  
   return data;
 }
-
 // Get skills for a project
 export async function getProjectSkills(projectId: string): Promise<Skill[]> {
   const supabase = createClient();

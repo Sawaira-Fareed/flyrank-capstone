@@ -7,11 +7,11 @@ import {
   PROJECT_MENTOR_PROMPT,
   CONTINUE_PROMPT,
   FEATURES_PROMPT,
+  SKILL_MAP_REQUEST_PROMPT,
 } from "@/lib/prompts";
 
 export const maxDuration = 60;
 
-// OpenRouter (GPT-4o Mini) — Primary
 const openrouter = createOpenAI({
   baseURL: "https://openrouter.ai/api/v1",
   apiKey: process.env.OPENROUTER_API_KEY,
@@ -22,15 +22,20 @@ const openrouter = createOpenAI({
 });
 
 export async function POST(req: Request) {
-  const { messages }: { messages: UIMessage[] } = await req.json();
+  const body = await req.json();
+  const messages = body.messages;
 
-  // Detect user intent
-  const lastUserMsg = [...messages].reverse().find((m) => m.role === "user");
-    const lastText = (lastUserMsg?.parts?.find((p: any) => p.type === "text") as any)?.text || "";
+  // Extract last user message text
+  const lastUserMsg = [...messages].reverse().find((m: any) => m.role === "user");
+  const lastText = lastUserMsg?.content || lastUserMsg?.parts?.find((p: any) => p.type === "text")?.text || "";
 
   let systemPrompt = ELSA_SYSTEM_PROMPT;
+  let isSkillMapRequest = false;
 
-  if (
+  if (lastText.includes("[SKILL_MAP_REQUEST]")) {
+    systemPrompt += "\n\n" + SKILL_MAP_REQUEST_PROMPT;
+    isSkillMapRequest = true;
+  } else if (
     lastText.match(/want to (build|create|make|start)/i) ||
     lastText.match(/wanna (build|create|make)/i) ||
     lastText.match(/i want (a|an|to)/i)
@@ -42,58 +47,78 @@ export async function POST(req: Request) {
     systemPrompt += "\n\n" + FEATURES_PROMPT;
   }
 
-  const convertedMessages = await convertToModelMessages(messages);
+  // ==========================================
+  // SKILL MAP REQUEST — Non-streaming, plain format
+  // ==========================================
+  if (isSkillMapRequest) {
+    const userContent = lastText.replace("[SKILL_MAP_REQUEST]", "").trim();
 
-  // Try providers in order: OpenRouter → Groq → Gemini
+    const providers = [
+      { name: "openrouter", model: openrouter("openai/gpt-4o-mini") },
+      { name: "gemini", model: google("gemini-2.0-flash") },
+      { name: "groq", model: groq("llama-3.3-70b-versatile") },
+    ];
+
+    for (const provider of providers) {
+      try {
+        const result = streamText({
+          model: provider.model,
+          system: systemPrompt,
+          messages: [{ role: "user", content: userContent }],
+        });
+
+        let fullText = "";
+        for await (const chunk of result.textStream) {
+          fullText += chunk;
+        }
+
+        return new Response(fullText, {
+          headers: { "Content-Type": "text/plain; charset=utf-8" },
+        });
+      } catch (error) {
+        console.error(`${provider.name} failed:`, error);
+        continue;
+      }
+    }
+
+    return new Response(
+      JSON.stringify({ error: "All AI providers unavailable." }),
+      { status: 503, headers: { "Content-Type": "application/json" } }
+    );
+  }
+
+  // ==========================================
+  // REGULAR CHAT — Streaming with convertToModelMessages
+  // ==========================================
+  const convertedMessages = await convertToModelMessages(messages as UIMessage[]);
+
   const providers = [
     {
       name: "openrouter",
-      fn: () =>
-        streamText({
-          model: openrouter("openai/gpt-4o-mini"),
-          system: systemPrompt,
-          messages: convertedMessages,
-         
-        }),
+      fn: () => streamText({ model: openrouter("openai/gpt-4o-mini"), system: systemPrompt, messages: convertedMessages }),
     },
     {
       name: "gemini",
-      fn: () =>
-        streamText({
-          model: google("gemini-2.0-flash"),
-          system: systemPrompt,
-          messages: convertedMessages,
-          
-        }),
+      fn: () => streamText({ model: google("gemini-2.0-flash"), system: systemPrompt, messages: convertedMessages }),
     },
     {
       name: "groq",
-      fn: () =>
-        streamText({
-          model: groq("llama-3.3-70b-versatile"),
-          system: systemPrompt,
-          messages: convertedMessages,
-        
-        }),
+      fn: () => streamText({ model: groq("llama-3.3-70b-versatile"), system: systemPrompt, messages: convertedMessages }),
     },
-    
   ];
 
   for (const provider of providers) {
     try {
       const result = await provider.fn();
-      return createUIMessageStreamResponse({
-        stream: toUIMessageStream({ stream: result.stream }),
-      });
+      return createUIMessageStreamResponse({ stream: toUIMessageStream({ stream: result.stream }) });
     } catch (error) {
       console.log(`${provider.name} failed, trying next...`);
       continue;
     }
   }
 
-  // All failed
   return new Response(
-    JSON.stringify({ error: "All AI providers unavailable. Please try again later." }),
+    JSON.stringify({ error: "All AI providers unavailable." }),
     { status: 503, headers: { "Content-Type": "application/json" } }
   );
 }
