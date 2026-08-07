@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { Search, Trash2, ExternalLink } from "lucide-react";
+import { Search, Trash2, ExternalLink, Edit3 } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 import { getArchiveData, deleteNote, deleteBookmark } from "@/lib/store";
 
@@ -17,6 +17,9 @@ export default function ArchivePage() {
   const [userId, setUserId] = useState<string | null>(null);
   const supabase = createClient();
 
+  // Projects filter
+  const [projectFilter, setProjectFilter] = useState<"completed" | "saved">("completed");
+
   useEffect(() => {
     const getUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -26,13 +29,21 @@ export default function ArchivePage() {
     getUser();
   }, []);
 
+  const refreshData = async () => {
+    if (!userId) return;
+    setData(await getArchiveData(userId));
+  };
+
   const tabs: { key: Tab; label: string; icon: string }[] = [
     { key: "lessons", label: "Lessons", icon: "📖" }, { key: "projects", label: "Projects", icon: "📁" }, { key: "badges", label: "Badges", icon: "🏆" },
     { key: "certificates", label: "Certificates", icon: "📜" }, { key: "notes", label: "Notes", icon: "📝" }, { key: "resources", label: "Resources", icon: "📚" },
   ];
 
-  const handleDeleteNote = async (noteId: string) => { if (!userId) return; await deleteNote(noteId); setData(await getArchiveData(userId)); };
-  const handleDeleteBookmark = async (bookmarkId: string) => { if (!userId) return; await deleteBookmark(bookmarkId); setData(await getArchiveData(userId)); };
+  const handleDeleteNote = async (noteId: string) => { if (!userId) return; await deleteNote(noteId); refreshData(); };
+  const handleDeleteBookmark = async (bookmarkId: string) => { if (!userId) return; await deleteBookmark(bookmarkId); refreshData(); };
+
+  const completedProjects = data?.projects?.filter((p: any) => p.progress >= 100) || [];
+  const savedProjects = data?.projects?.filter((p: any) => (p.progress || 0) < 100) || [];
 
   if (loading) {
     return (
@@ -85,6 +96,7 @@ export default function ArchivePage() {
         </div>
       </div>
 
+      {/* Main Tabs */}
       <div className="flex gap-1 overflow-x-auto pb-2 mb-4 lg:mb-6 -mx-2 px-2 lg:mx-0 lg:px-0">
         {tabs.map((tab) => (
           <button key={tab.key} onClick={() => setActiveTab(tab.key)}
@@ -94,7 +106,22 @@ export default function ArchivePage() {
         ))}
       </div>
 
+      {/* Sub-tabs for Projects */}
+      {activeTab === "projects" && (
+        <div className="flex gap-1 mb-4">
+          <button onClick={() => setProjectFilter("completed")}
+            className={`rounded-full px-4 py-1.5 text-xs font-semibold transition ${projectFilter === "completed" ? "bg-[#8B5CF6] text-white" : "bg-white/40 text-[#6B7280]"}`}>
+            ✅ Completed
+          </button>
+          <button onClick={() => setProjectFilter("saved")}
+            className={`rounded-full px-4 py-1.5 text-xs font-semibold transition ${projectFilter === "saved" ? "bg-[#8B5CF6] text-white" : "bg-white/40 text-[#6B7280]"}`}>
+            📌 Saved for Later
+          </button>
+        </div>
+      )}
+
       <div className="space-y-2 lg:space-y-4">
+        {/* LESSONS TAB */}
         {activeTab === "lessons" && (
           data?.lessons?.filter((l: any) => !search || (l.title || "").toLowerCase().includes(search.toLowerCase())).length === 0 ? (
             <EmptyState icon="📖" message="No completed lessons yet." cta="Start Learning" href="/learn" img="/assignments.png" />
@@ -103,24 +130,50 @@ export default function ArchivePage() {
           ))
         )}
 
+        {/* PROJECTS TAB */}
         {activeTab === "projects" && (
-          data?.projects?.filter((p: any) => !search || p.title?.toLowerCase().includes(search.toLowerCase())).length === 0 ? (
-            <EmptyState icon="📁" message="No completed projects yet." cta="Start a Project" href="/garden" img="/pose1.png" />
-          ) : (
-            <div className="grid grid-cols-1 gap-2.5 lg:gap-4">
-              {data?.projects?.filter((p: any) => !search || p.title?.toLowerCase().includes(search.toLowerCase())).map((project: any) => (
-                <motion.div key={project.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-                  className="rounded-2xl border border-white/40 p-2.5 lg:p-4"
-                  style={{ background: "rgba(255,255,255,0.25)", backdropFilter: "blur(14px)", boxShadow: "0 8px 24px rgba(139,92,246,0.06)" }}>
-                  <div className="flex items-center gap-2 mb-2"><span className="text-lg">📁</span><div className="min-w-0"><h3 className="font-heading font-semibold text-[#312E81] text-[11px] lg:text-sm truncate">{project.title}</h3><p className="text-[9px] lg:text-xs text-[#6B7280]">{new Date(project.created_at).toLocaleDateString()}</p></div></div>
-                  <p className="text-[10px] lg:text-xs text-[#6B7280] mb-2 line-clamp-2">{project.goal}</p>
-                  <div className="flex items-center justify-between"><span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[9px] lg:text-xs font-semibold text-emerald-700">✅ Done</span><Link href={`/projects/${project.id}`} className="text-[10px] lg:text-xs font-semibold text-[#8B5CF6] hover:underline">Open →</Link></div>
-                </motion.div>
-              ))}
-            </div>
-          )
+          <>
+            {projectFilter === "completed" && (
+              completedProjects.length === 0 ? (
+                <EmptyState icon="📁" message="No fully completed projects yet." cta="Start a Project" href="/garden" img="/pose1.png" />
+              ) : (
+                <div className="grid grid-cols-1 gap-2.5 lg:gap-4">
+                  {completedProjects.filter((p: any) => !search || p.title?.toLowerCase().includes(search.toLowerCase())).map((project: any) => (
+                    <motion.div key={project.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                      className="rounded-2xl border border-white/40 p-2.5 lg:p-4"
+                      style={{ background: "rgba(255,255,255,0.25)", backdropFilter: "blur(14px)", boxShadow: "0 8px 24px rgba(139,92,246,0.06)" }}>
+                      <div className="flex items-center gap-2 mb-2"><span className="text-lg">📁</span><div className="min-w-0"><h3 className="font-heading font-semibold text-[#312E81] text-[11px] lg:text-sm truncate">{project.title}</h3><p className="text-[9px] lg:text-xs text-[#6B7280]">{new Date(project.created_at).toLocaleDateString()}</p></div></div>
+                      <p className="text-[10px] lg:text-xs text-[#6B7280] mb-2 line-clamp-2">{project.goal}</p>
+                      <div className="flex items-center justify-between"><span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[9px] lg:text-xs font-semibold text-emerald-700">✅ 100% Done</span><Link href={`/projects/${project.id}`} className="text-[10px] lg:text-xs font-semibold text-[#8B5CF6] hover:underline">Open →</Link></div>
+                    </motion.div>
+                  ))}
+                </div>
+              )
+            )}
+            {projectFilter === "saved" && (
+              savedProjects.length === 0 ? (
+                <EmptyState icon="📌" message="No saved projects." cta="Start a Project" href="/garden" img="/pose1.png" />
+              ) : (
+                <div className="grid grid-cols-1 gap-2.5 lg:gap-4">
+                  {savedProjects.filter((p: any) => !search || p.title?.toLowerCase().includes(search.toLowerCase())).map((project: any) => (
+                    <motion.div key={project.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                      className="rounded-2xl border border-white/40 p-2.5 lg:p-4"
+                      style={{ background: "rgba(255,255,255,0.25)", backdropFilter: "blur(14px)", boxShadow: "0 8px 24px rgba(139,92,246,0.06)" }}>
+                      <div className="flex items-center gap-2 mb-2"><span className="text-lg">📁</span><div className="min-w-0"><h3 className="font-heading font-semibold text-[#312E81] text-[11px] lg:text-sm truncate">{project.title}</h3><p className="text-[9px] lg:text-xs text-[#6B7280]">{new Date(project.created_at).toLocaleDateString()}</p></div></div>
+                      <p className="text-[10px] lg:text-xs text-[#6B7280] mb-2 line-clamp-2">{project.goal}</p>
+                      <div className="flex items-center justify-between">
+                        <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[9px] lg:text-xs font-semibold text-amber-700">📌 {project.progress || 0}% done</span>
+                        <Link href={`/projects/${project.id}`} className="text-[10px] lg:text-xs font-semibold text-[#8B5CF6] hover:underline">Open →</Link>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              )
+            )}
+          </>
         )}
 
+        {/* BADGES TAB */}
         {activeTab === "badges" && (
           data?.badges?.length === 0 ? <EmptyState icon="🏆" message="No badges earned yet." cta="Start Learning" href="/learn" img="/pose2.png" /> : (
             <div className="grid grid-cols-3 lg:grid-cols-5 gap-1.5 lg:gap-3">
@@ -137,8 +190,16 @@ export default function ArchivePage() {
           )
         )}
 
-        {activeTab === "certificates" && <EmptyState icon="📜" message="Certificates coming soon!" cta="Complete a Course" href="/learn" img="/mission_complete.png" />}
+        {/* CERTIFICATES TAB */}
+        {activeTab === "certificates" && (
+          <div className="text-center py-8 lg:py-14">
+            <img src="/mission_complete.png" alt="" className="object-contain w-16 lg:w-28 h-auto mx-auto mb-2" />
+            <p className="font-heading font-semibold text-[#312E81] text-xs lg:text-base">Showcase your project by generating a small overview certificate of it</p>
+            <Link href="/certificates" className="inline-block mt-2 lg:mt-3 rounded-full bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] px-3 py-1.5 text-[10px] lg:text-sm font-semibold text-white hover:scale-105 transition">Generate Certificate</Link>
+          </div>
+        )}
 
+        {/* NOTES TAB */}
         {activeTab === "notes" && (
           data?.notes?.filter((n: any) => !search || n.title?.toLowerCase().includes(search.toLowerCase())).length === 0 ? (
             <EmptyState icon="📝" message="No notes yet." cta="Create Note" href="/notes" img="/pose3.png" />
@@ -157,19 +218,14 @@ export default function ArchivePage() {
           )
         )}
 
+        {/* RESOURCES TAB */}
         {activeTab === "resources" && (
           data?.bookmarks?.filter((b: any) => !search || b.title?.toLowerCase().includes(search.toLowerCase())).length === 0 ? (
             <EmptyState icon="📚" message="No saved resources yet." cta="Browse Resources" href="#" img="/pose3.png" />
           ) : (
             <div className="grid grid-cols-1 gap-2 lg:grid-cols-3 lg:gap-3">
               {data?.bookmarks?.filter((b: any) => !search || b.title?.toLowerCase().includes(search.toLowerCase())).map((bookmark: any) => (
-                <motion.div key={bookmark.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-                  className="rounded-2xl border border-white/40 p-2.5 lg:p-4"
-                  style={{ background: "rgba(255,255,255,0.25)", backdropFilter: "blur(14px)", boxShadow: "0 8px 24px rgba(139,92,246,0.06)" }}>
-                  <div className="flex items-start justify-between mb-1"><div className="flex items-center gap-1.5 min-w-0"><span className="text-xs">{bookmark.type==="video"?"🎬":bookmark.type==="article"?"📄":"🔗"}</span><h3 className="font-heading font-semibold text-[#312E81] text-[11px] lg:text-sm truncate">{bookmark.title}</h3></div><button onClick={() => handleDeleteBookmark(bookmark.id)} className="text-[#6B7280] hover:text-red-500 shrink-0"><Trash2 size={14} /></button></div>
-                  <p className="text-[10px] lg:text-xs text-[#6B7280] line-clamp-2 mb-1.5">{bookmark.description}</p>
-                  {bookmark.url && <a href={bookmark.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-[10px] lg:text-xs font-semibold text-[#8B5CF6] hover:underline"><ExternalLink size={12} /> Open</a>}
-                </motion.div>
+                <BookmarkCard key={bookmark.id} bookmark={bookmark} onDelete={handleDeleteBookmark} onUpdate={refreshData} />
               ))}
             </div>
           )
@@ -179,11 +235,8 @@ export default function ArchivePage() {
   );
 }
 
-/// ─── Lesson Card with expandable chat review ───
+// ─── Lesson Card ───
 function LessonCard({ lesson }: { lesson: any }) {
-  const [expanded, setExpanded] = useState(false);
-  const chatMessages = lesson.messages || [];
-
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
       className="rounded-2xl border border-white/40 p-2.5 lg:p-4"
@@ -194,35 +247,81 @@ function LessonCard({ lesson }: { lesson: any }) {
           <h3 className="font-heading font-semibold text-[#312E81] text-[11px] lg:text-sm truncate">{lesson.title || "Untitled Lesson"}</h3>
           <p className="text-[9px] lg:text-xs text-[#6B7280]">{lesson.completed_at ? new Date(lesson.completed_at).toLocaleDateString() : ""} — {lesson.score || 0}%</p>
         </div>
-        <button 
-          onClick={() => setExpanded(!expanded)}
+        <Link 
+          href={`/learn?skill_id=${lesson.skill_id}${lesson.project_id ? `&project_id=${lesson.project_id}` : ""}`}
           className="rounded-full bg-[#8B5CF6]/10 px-2.5 py-1.5 text-[10px] lg:text-xs font-semibold text-[#8B5CF6] hover:bg-[#8B5CF6]/20 transition shrink-0">
-          {expanded ? "Hide" : "Review"}
-        </button>
+          Review
+        </Link>
       </div>
-      {expanded && (
-        <div className="mt-3 pt-3 border-t border-white/30">
-          {chatMessages.length === 0 ? (
-            <p className="text-[11px] text-[#6B7280] italic">No chat history saved for this lesson.</p>
-          ) : (
-            <div className="space-y-3 max-h-[400px] overflow-y-auto">
-              {chatMessages.map((msg: any, i: number) => (
-                <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-                  <div className={`max-w-[85%] rounded-2xl px-3 py-2 text-[11px] lg:text-xs ${msg.role === "user" ? "bg-gradient-to-r from-[#8B5CF6] to-[#A78BFA] text-white" : "bg-white/60 backdrop-blur text-[#312E81] border border-white/40"}`}>
-                    {msg.parts?.map((part: any, j: number) => 
-                      part.type === "text" ? <p key={j} className="whitespace-pre-wrap">{part.text}</p> : null
-                    ) || (typeof msg.content === "string" ? <p className="whitespace-pre-wrap">{msg.content}</p> : null)}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
     </motion.div>
   );
 }
 
+// ─── Bookmark Card with Edit ───
+function BookmarkCard({ bookmark, onDelete, onUpdate }: { bookmark: any; onDelete: (id: string) => void; onUpdate: () => void }) {
+  const [editing, setEditing] = useState(false);
+  const [title, setTitle] = useState(bookmark.title);
+  const [url, setUrl] = useState(bookmark.url || "");
+  const [desc, setDesc] = useState(bookmark.description || "");
+  const [type, setType] = useState(bookmark.type || "article");
+  const [saving, setSaving] = useState(false);
+  const supabase = createClient();
+
+  const handleSave = async () => {
+    setSaving(true);
+    await supabase.from("bookmarks").update({ title, url, description: desc, type }).eq("id", bookmark.id);
+    setEditing(false);
+    setSaving(false);
+    onUpdate();
+  };
+
+  if (editing) {
+    return (
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+        className="rounded-2xl border border-white/40 p-3 lg:p-4"
+        style={{ background: "rgba(255,255,255,0.25)", backdropFilter: "blur(14px)", boxShadow: "0 8px 24px rgba(139,92,246,0.06)" }}>
+        <div className="space-y-2">
+          <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title" className="w-full rounded-lg border border-white/40 bg-white/50 px-3 py-1.5 text-xs text-[#312E81] outline-none" />
+          <input type="url" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="URL" className="w-full rounded-lg border border-white/40 bg-white/50 px-3 py-1.5 text-xs text-[#312E81] outline-none" />
+          <textarea value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="Description" rows={2} className="w-full rounded-lg border border-white/40 bg-white/50 px-3 py-1.5 text-xs text-[#312E81] outline-none resize-none" />
+          <select value={type} onChange={(e) => setType(e.target.value)} className="w-full rounded-lg border border-white/40 bg-white/50 px-3 py-1.5 text-xs text-[#312E81] outline-none">
+            <option value="article">📄 Article</option>
+            <option value="video">🎬 Video</option>
+            <option value="tool">🔧 Tool</option>
+            <option value="other">🔗 Other</option>
+          </select>
+          <div className="flex gap-2">
+            <button onClick={() => setEditing(false)} className="flex-1 rounded-lg border border-[#C4B5FD]/40 bg-white/50 py-1.5 text-[10px] text-[#6B7280]">Cancel</button>
+            <button onClick={handleSave} disabled={!title.trim() || saving} className="flex-1 rounded-lg bg-[#8B5CF6] py-1.5 text-[10px] font-semibold text-white disabled:opacity-50">{saving ? "Saving..." : "Save"}</button>
+          </div>
+        </div>
+      </motion.div>
+    );
+  }
+
+  return (
+    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+      className="rounded-2xl border border-white/40 p-2.5 lg:p-4"
+      style={{ background: "rgba(255,255,255,0.25)", backdropFilter: "blur(14px)", boxShadow: "0 8px 24px rgba(139,92,246,0.06)" }}>
+      <div className="flex items-start justify-between mb-1">
+        <div className="flex items-center gap-1.5 min-w-0">
+          <span className="text-xs">{bookmark.type === "video" ? "🎬" : bookmark.type === "article" ? "📄" : bookmark.type === "tool" ? "🔧" : "🔗"}</span>
+          <h3 className="font-heading font-semibold text-[#312E81] text-[11px] lg:text-sm truncate">{bookmark.title}</h3>
+        </div>
+        <div className="flex items-center gap-0.5 shrink-0">
+          <button onClick={() => setEditing(true)} className="p-1 rounded-full hover:bg-white/40 text-[#6B7280]"><Edit3 size={13} /></button>
+          <button onClick={() => onDelete(bookmark.id)} className="p-1 rounded-full hover:bg-white/40 text-[#6B7280] hover:text-red-500"><Trash2 size={13} /></button>
+        </div>
+      </div>
+      <p className="text-[10px] lg:text-xs text-[#6B7280] line-clamp-2 mb-1.5">{bookmark.description}</p>
+      {bookmark.url && (
+        <a href={bookmark.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-[10px] lg:text-xs font-semibold text-[#8B5CF6] hover:underline">
+          <ExternalLink size={12} /> Open
+        </a>
+      )}
+    </motion.div>
+  );
+}
 
 function EmptyState({ icon, message, cta, href, img }: { icon: string; message: string; cta: string; href: string; img: string }) {
   return (

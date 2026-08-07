@@ -5,9 +5,9 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft, Trash2, Play } from "lucide-react";
+import { ArrowLeft, Trash2, Play, Bookmark, ExternalLink } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
-import { getProjectSkills } from "@/lib/store";
+import { getProjectSkills, getUserBookmarks } from "@/lib/store";
 
 export default function ProjectDetailPage() {
   const params = useParams();
@@ -17,8 +17,10 @@ export default function ProjectDetailPage() {
 
   const [project, setProject] = useState<any>(null);
   const [skills, setSkills] = useState<any[]>([]);
+  const [bookmarks, setBookmarks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showDelete, setShowDelete] = useState(false);
+  const [archiving, setArchiving] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -28,13 +30,28 @@ export default function ProjectDetailPage() {
       setProject(proj);
       const skillsData = await getProjectSkills(projectId);
       setSkills(skillsData);
+      // Load bookmarks filtered by project_id
+      const allBookmarks = await getUserBookmarks(user.id);
+      setBookmarks(allBookmarks.filter((b: any) => b.project_id === projectId));
       setLoading(false);
     };
     load();
   }, [projectId]);
 
-  const handleDelete = async () => { await supabase.from("projects").delete().eq("id", projectId); router.push("/projects"); };
-  const handleArchive = async () => { await supabase.from("projects").update({ status: "completed" }).eq("id", projectId); setProject({ ...project, status: "completed" }); };
+  const handleDelete = async () => { 
+    await supabase.from("projects").delete().eq("id", projectId); 
+    router.push("/projects"); 
+  };
+
+  const handleArchive = async () => {
+    setArchiving(true);
+    const isComplete = (project.progress || 0) >= 100;
+    await supabase.from("projects").update({ 
+      status: isComplete ? "completed" : "saved_for_later" 
+    }).eq("id", projectId);
+    setProject({ ...project, status: isComplete ? "completed" : "saved_for_later" });
+    setArchiving(false);
+  };
 
   if (loading) {
     return (
@@ -59,6 +76,8 @@ export default function ProjectDetailPage() {
     );
   }
 
+  const isComplete = (project.progress || 0) >= 100;
+
   return (
     <div className="max-w-5xl mx-auto px-4 lg:px-8 py-6">
       <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
@@ -70,9 +89,9 @@ export default function ProjectDetailPage() {
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <button onClick={handleArchive} disabled={project.status === "completed"}
+          <button onClick={handleArchive} disabled={archiving || project.status === "completed" || project.status === "saved_for_later"}
             className="rounded-full border border-[#C4B5FD]/40 bg-white/40 px-4 py-2 text-xs font-semibold text-[#8B5CF6] hover:bg-[#8B5CF6]/10 transition disabled:opacity-50">
-            {project.status === "completed" ? "✅ Completed" : "📦 Archive"}
+            {project.status === "completed" ? "✅ Completed" : project.status === "saved_for_later" ? "📌 Saved for Later" : archiving ? "Archiving..." : "📦 Archive"}
           </button>
           <button onClick={() => setShowDelete(true)} className="rounded-full border border-red-200 bg-white/40 px-4 py-2 text-xs font-semibold text-red-500 hover:bg-red-50 transition"><Trash2 size={16} /></button>
         </div>
@@ -95,7 +114,9 @@ export default function ProjectDetailPage() {
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left Column */}
         <div className="lg:col-span-2 space-y-6">
+          {/* Progress Card */}
           <div className="rounded-2xl border border-white/40 p-5 lg:p-6"
             style={{ background: "rgba(255,255,255,0.25)", backdropFilter: "blur(14px)", boxShadow: "0 8px 24px rgba(139,92,246,0.06)" }}>
             <h2 className="font-heading font-semibold text-[#312E81] mb-4">Progress</h2>
@@ -113,9 +134,11 @@ export default function ProjectDetailPage() {
                 <p className="text-xs text-[#6B7280] mt-1">Created {new Date(project.created_at).toLocaleDateString()}</p>
               </div>
             </div>
-            <Link href="/learn" className="mt-4 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] px-5 lg:px-6 py-2.5 lg:py-3 text-sm font-semibold text-white hover:scale-105 transition"><Play size={16} /> Continue Learning</Link>
+            <Link href="/learn" className="mt-4 inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#87CEEB] via-[#C4B5FD] to-[#F472B6] px-5 lg:px-6 py-2.5 lg:py-3 text-sm font-semibold text-white hover:scale-105 transition shadow-md"
+              style={{ boxShadow: "0 4px 16px rgba(139,92,246,0.25)" }}><Play size={16} /> Continue Learning</Link>
           </div>
 
+          {/* Skills Card */}
           <div className="rounded-2xl border border-white/40 p-5 lg:p-6"
             style={{ background: "rgba(255,255,255,0.25)", backdropFilter: "blur(14px)", boxShadow: "0 8px 24px rgba(139,92,246,0.06)" }}>
             <h2 className="font-heading font-semibold text-[#312E81] mb-4">Skills to Learn</h2>
@@ -127,7 +150,10 @@ export default function ProjectDetailPage() {
             ) : (
               <div className="space-y-3">
                 {skills.map((skill) => (
-                  <div key={skill.id} className="flex items-center gap-3">
+                  <Link 
+                    key={skill.id} 
+                    href={`/learn?skill_id=${skill.id}&project_id=${projectId}`}
+                    className={`flex items-center gap-3 hover:bg-white/20 rounded-xl p-2 transition cursor-pointer ${skill.status === "locked" ? "opacity-50 pointer-events-none" : ""}`}>
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shrink-0 ${skill.status === "completed" ? "bg-emerald-400 text-white" : skill.status === "active" ? "bg-[#8B5CF6] text-white ring-2 ring-[#C4B5FD]/40" : "bg-gray-200 text-gray-400"}`}>
                       {skill.status === "completed" ? "✓" : skill.status === "active" ? "●" : "🔒"}
                     </div>
@@ -136,23 +162,62 @@ export default function ProjectDetailPage() {
                       <p className="text-xs text-[#6B7280] truncate">{skill.description}</p>
                     </div>
                     {skill.status === "active" && <span className="text-xs bg-[#8B5CF6]/10 text-[#8B5CF6] px-2 py-0.5 rounded-full shrink-0">Today</span>}
-                  </div>
+                    {skill.status === "completed" && <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full shrink-0">Done</span>}
+                  </Link>
                 ))}
               </div>
             )}
           </div>
         </div>
 
+        {/* Right Column */}
         <div className="space-y-4">
+          {/* About Card */}
           <div className="rounded-2xl border border-white/40 p-5" style={{ background: "rgba(255,255,255,0.25)", backdropFilter: "blur(14px)", boxShadow: "0 8px 24px rgba(139,92,246,0.06)" }}>
             <h3 className="font-heading font-semibold text-[#312E81] mb-3 text-sm">About</h3>
             <p className="text-sm text-[#6B7280]">{project.goal}</p>
           </div>
+          
+          {/* Status Card */}
           <div className="rounded-2xl border border-white/40 p-5" style={{ background: "rgba(255,255,255,0.25)", backdropFilter: "blur(14px)", boxShadow: "0 8px 24px rgba(139,92,246,0.06)" }}>
             <h3 className="font-heading font-semibold text-[#312E81] mb-3 text-sm">Status</h3>
-            <span className={`rounded-full px-3 py-1 text-xs font-semibold ${project.status === "completed" ? "bg-emerald-100 text-emerald-700" : "bg-[#C4B5FD]/20 text-[#8B5CF6]"}`}>
-              {project.status === "completed" ? "Completed" : "In Progress"}
+            <span className={`rounded-full px-3 py-1 text-xs font-semibold ${
+              project.status === "completed" ? "bg-emerald-100 text-emerald-700" : 
+              project.status === "saved_for_later" ? "bg-amber-100 text-amber-700" : 
+              "bg-[#C4B5FD]/20 text-[#8B5CF6]"
+            }`}>
+              {project.status === "completed" ? "✅ Completed" : project.status === "saved_for_later" ? "📌 Saved for Later" : "🚀 In Progress"}
             </span>
+          </div>
+
+          {/* Resources Card */}
+          <div className="rounded-2xl border border-white/40 p-5" style={{ background: "rgba(255,255,255,0.25)", backdropFilter: "blur(14px)", boxShadow: "0 8px 24px rgba(139,92,246,0.06)" }}>
+            <h3 className="font-heading font-semibold text-[#312E81] mb-3 text-sm flex items-center gap-2">
+              <Bookmark size={16} className="text-[#8B5CF6]" /> Resources
+            </h3>
+            {bookmarks.length === 0 ? (
+              <p className="text-xs text-[#6B7280]">No resources saved for this project yet. Save them while learning!</p>
+            ) : (
+              <div className="space-y-2">
+                {bookmarks.map((bookmark: any) => (
+                  <a 
+                    key={bookmark.id}
+                    href={bookmark.url || "#"} 
+                    target={bookmark.url ? "_blank" : undefined} 
+                    rel="noopener noreferrer"
+                    className="block rounded-xl bg-white/40 border border-white/40 p-2.5 hover:bg-white/60 transition">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs">{bookmark.type === "video" ? "🎬" : bookmark.type === "article" ? "📄" : bookmark.type === "tool" ? "🔧" : "🔗"}</span>
+                      <p className="text-xs font-semibold text-[#312E81] truncate">{bookmark.title}</p>
+                    </div>
+                    <p className="text-[10px] text-[#6B7280] truncate mt-0.5">{bookmark.description || bookmark.url || "No description"}</p>
+                    {bookmark.url && (
+                      <span className="text-[10px] text-[#8B5CF6] flex items-center gap-0.5 mt-1"><ExternalLink size={10} /> Open</span>
+                    )}
+                  </a>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>

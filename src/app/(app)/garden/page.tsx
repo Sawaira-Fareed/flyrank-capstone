@@ -31,6 +31,9 @@ export default function GardenPage() {
   const [loading, setLoading] = useState(true);
   const [newGoal, setNewGoal] = useState("");
   const [creating, setCreating] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [modalGoal, setModalGoal] = useState("");
+  const [modalCreating, setModalCreating] = useState(false);
 
   const loadData = useCallback(async (userId: string) => {
     const [userProjects, userStats] = await Promise.all([getUserProjects(userId), getUserStats(userId)]);
@@ -49,11 +52,14 @@ export default function GardenPage() {
     init();
   }, [loadData]);
 
-   const handleCreate = async () => {
-    if (!newGoal.trim() || !user) return;
-    setCreating(true);
+  const handleCreate = async (goalOverride?: string) => {
+    const goal = goalOverride || newGoal.trim();
+    if (!goal || !user) return;
+    if (goalOverride) setModalCreating(true);
+    else setCreating(true);
+    
     try {
-      const project = await createProject(user.id, newGoal.trim());
+      const project = await createProject(user.id, goal);
       if (project) {
         try {
           const res = await fetch("/api/chat", {
@@ -63,45 +69,42 @@ export default function GardenPage() {
               messages: [
                 {
                   role: "user",
-                  content: `[SKILL_MAP_REQUEST] Generate a skill map for a project called "${newGoal.trim()}". The project goal is: "${newGoal.trim()}". Return ONLY a JSON array of skills.`,
+                  content: `[SKILL_MAP_REQUEST] Generate a skill map for a project called "${goal}". The project goal is: "${goal}". Return ONLY a JSON array of skills.`,
                 },
               ],
             }),
           });
 
-          if (!res.ok) throw new Error(`API returned ${res.status}`);
+          if (res.ok) {
+            const fullText = await res.text();
+            let skills = [];
+            const jsonMatch = fullText.match(/\[[\s\S]*\]/);
+            if (jsonMatch) {
+              try { skills = JSON.parse(jsonMatch[0]); } catch {}
+            }
 
-          const fullText = await res.text();
-          let skills = [];
-          const jsonMatch = fullText.match(/\[[\s\S]*\]/);
-          if (jsonMatch) {
-            try {
-              skills = JSON.parse(jsonMatch[0]);
-            } catch (parseError) {
-              console.error("Failed to parse skills JSON:", parseError);
+            if (skills.length > 0) {
+              await supabase.from("skills").insert(
+                skills.map((s: any, i: number) => ({
+                  project_id: project.id,
+                  name: s.name,
+                  description: s.description || "",
+                  days: s.days || 2,
+                  status: i === 0 ? "active" : "locked",
+                  sort_order: i,
+                }))
+              );
             }
           }
-
-          if (skills.length > 0) {
-            await supabase.from("skills").insert(
-              skills.map((s: any, i: number) => ({
-                project_id: project.id,
-                name: s.name,
-                description: s.description || "",
-                days: s.days || 2,
-                status: i === 0 ? "active" : "locked",
-                sort_order: i,
-              }))
-            );
-          }
-        } catch (aiError) {
-          console.error("AI skill generation failed:", aiError);
-        }
+        } catch {}
         setNewGoal("");
+        setModalGoal("");
+        setShowCreateModal(false);
         await loadData(user.id);
       }
-    } finally {
-      setCreating(false);
+    } finally { 
+      setCreating(false); 
+      setModalCreating(false); 
     }
   };
 
@@ -145,7 +148,7 @@ export default function GardenPage() {
             <Search size={18} className="text-[#6B7280] shrink-0" />
             <input type="text" value={newGoal} onChange={(e) => setNewGoal(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleCreate()} placeholder="What do you want to build today?" className="flex-1 min-w-0 bg-transparent text-sm text-[#312E81] outline-none placeholder:text-[#6B7280]/60" />
           </div>
-          <button onClick={handleCreate} disabled={!newGoal.trim() || creating} className="rounded-full bg-gradient-to-r from-[#8B5CF6] to-[#A78BFA] px-5 lg:px-6 py-3 lg:py-3.5 text-sm font-semibold text-white shadow-lg hover:scale-105 transition disabled:opacity-50 flex items-center justify-center gap-2 shrink-0">
+          <button onClick={() => handleCreate()} disabled={!newGoal.trim() || creating} className="rounded-full bg-gradient-to-r from-[#8B5CF6] to-[#A78BFA] px-5 lg:px-6 py-3 lg:py-3.5 text-sm font-semibold text-white shadow-lg hover:scale-105 transition disabled:opacity-50 flex items-center justify-center gap-2 shrink-0">
             {creating ? <Loader2 size={16} className="animate-spin" /> : null}{creating ? "Creating..." : "Explore Ideas ✨"}
           </button>
         </div>
@@ -173,9 +176,9 @@ export default function GardenPage() {
                   className="rounded-2xl border border-white/40 px-4 lg:px-5 py-4 lg:py-5 text-center cursor-pointer transition"
                   style={{ background: "rgba(255,255,255,0.30)", backdropFilter: "blur(14px)", boxShadow: "0 8px 24px rgba(139,92,246,0.10)" }}
                   onClick={() => router.push(`/projects/${project.id}`)}>
-                  <span className="text-2xl lg:text-3xl">{project.status === "completed" ? "✅" : "🚀"}</span>
+                  <span className="text-2xl lg:text-3xl">{project.status === "completed" ? "✅" : project.status === "saved_for_later" ? "📌" : "🚀"}</span>
                   <h3 className="font-heading font-semibold text-[#312E81] mt-2 text-sm lg:text-base">{project.title}</h3>
-                  <p className="text-xs text-[#6B7280]">{project.status === "completed" ? "Completed" : `Day ${project.current_day} of ${project.total_days}`}</p>
+                  <p className="text-xs text-[#6B7280]">{project.status === "completed" ? "Completed" : project.status === "saved_for_later" ? "Saved" : `Day ${project.current_day} of ${project.total_days}`}</p>
                   <div className="mt-2 h-2 bg-[#C4B5FD]/30 rounded-full overflow-hidden"><div className="h-full bg-gradient-to-r from-[#8B5CF6] to-[#A78BFA] rounded-full" style={{ width: `${project.progress || 0}%` }} /></div>
                   <p className="text-xs text-[#6B7280] mt-1">{project.progress || 0}%</p>
                   <button className="mt-3 w-full rounded-full bg-gradient-to-r from-[#8B5CF6] to-[#A78BFA] py-2 text-xs font-semibold text-white flex items-center justify-center gap-1 hover:scale-105 transition">
@@ -184,7 +187,7 @@ export default function GardenPage() {
                 </motion.div>
               ))}
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} whileHover={{ scale: 1.02 }}
-                onClick={() => document.querySelector("input")?.focus()}
+                onClick={() => setShowCreateModal(true)}
                 className="rounded-2xl border-2 border-dashed border-[#C4B5FD]/40 px-4 lg:px-5 py-4 lg:py-5 flex flex-col items-center justify-center text-center cursor-pointer transition"
                 style={{ background: "rgba(255,255,255,0.15)", backdropFilter: "blur(14px)" }}>
                 <Plus size={32} className="text-[#8B5CF6]/60" />
@@ -217,6 +220,34 @@ export default function GardenPage() {
           </div>
         </div>
       </div>
+
+      {/* Create Project Modal */}
+      {showCreateModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm px-4">
+          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
+            className="rounded-2xl border border-white/40 p-6 w-full max-w-md"
+            style={{ background: "rgba(255,255,255,0.90)", backdropFilter: "blur(20px)", boxShadow: "0 20px 60px rgba(139,92,246,0.15)" }}>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-heading text-xl font-bold text-[#312E81]">Create New Project</h2>
+              <button onClick={() => setShowCreateModal(false)} className="p-1 rounded-full hover:bg-white/40">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#6B7280]"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+            <p className="text-sm text-[#6B7280] mb-4">What do you want to build?</p>
+            <input type="text" value={modalGoal} onChange={(e) => setModalGoal(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleCreate(modalGoal)}
+              placeholder="e.g., A weather app..."
+              className="w-full rounded-full border border-white/40 bg-white/50 backdrop-blur px-5 py-3 text-sm text-[#312E81] outline-none placeholder:text-[#6B7280]/60 mb-4 focus:border-[#8B5CF6]" />
+            <div className="flex gap-3 justify-end">
+              <button onClick={() => setShowCreateModal(false)} className="rounded-full border border-[#C4B5FD]/40 bg-white/50 px-5 py-2.5 text-sm text-[#6B7280]">Cancel</button>
+              <button onClick={() => handleCreate(modalGoal)} disabled={!modalGoal.trim() || modalCreating}
+                className="rounded-full bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] px-5 py-2.5 text-sm font-semibold text-white hover:scale-105 transition disabled:opacity-50 flex items-center gap-2">
+                {modalCreating ? "Creating..." : "Create →"}
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }

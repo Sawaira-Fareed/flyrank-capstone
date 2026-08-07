@@ -203,11 +203,24 @@ export async function getUserBookmarks(userId: string) {
   return data || [];
 }
 
-export async function addBookmark(userId: string, bookmark: { title: string; description?: string; url?: string; type?: string }) {
+export async function addBookmark(userId: string, bookmark: { 
+  title: string; 
+  description?: string; 
+  url?: string; 
+  type?: string;
+  project_id?: string | null;
+}) {
   const supabase = createClient();
   const { data } = await supabase
     .from("bookmarks")
-    .insert({ user_id: userId, ...bookmark })
+    .insert({ 
+      user_id: userId, 
+      title: bookmark.title,
+      description: bookmark.description || "",
+      url: bookmark.url || "",
+      type: bookmark.type || "article",
+      project_id: bookmark.project_id || null,
+    })
     .select()
     .single();
   return data;
@@ -264,5 +277,18 @@ export async function getArchiveData(userId: string) {
       certificates: 0,
       hoursLearned: Math.floor((completedLessons || 0) * 0.25),
     },
+    
   };
+  
+}
+// Check if a new badge was earned after an action
+export async function getNewBadgeEarned(
+  userId: string, 
+  badgesBefore: any[]
+): Promise<any | null> {
+  const badgesAfter = await getUserBadges(userId);
+  if (badgesAfter.length > badgesBefore.length) {
+    return badgesAfter[0]; // Most recently earned badge
+  }
+  return null;
 }
