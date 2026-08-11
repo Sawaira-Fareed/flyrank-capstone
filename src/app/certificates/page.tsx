@@ -1,6 +1,5 @@
 "use client";
-
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,7 +8,20 @@ import { ArrowLeft, Download, Loader2, Upload, Plus, X } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 import { getUserProjects } from "@/lib/store";
 
+
 export default function CertificatesPage() {
+  return (
+    <Suspense fallback={
+      <div className="max-w-4xl mx-auto px-4 lg:px-8 py-6">
+        <div className="h-8 bg-white/20 rounded w-48 mb-6 animate-pulse" />
+        <div className="space-y-4">{[...Array(3)].map((_,i)=><div key={i} className="h-24 bg-white/15 rounded-2xl animate-pulse"/>)}</div>
+      </div>
+    }>
+      <CertificatesPageContent />
+    </Suspense>
+  );
+}
+function CertificatesPageContent() {
   const supabase = createClient();
   const searchParams = useSearchParams();
   const viewId = searchParams.get("view");
