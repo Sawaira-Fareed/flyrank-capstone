@@ -24,11 +24,11 @@ export default function SettingsPage() {
   useEffect(() => {
     const init = async () => {
       const { data: { user: authUser } } = await supabase.auth.getUser();
+      if (!authUser) { setLoading(false); return; }
       setUser(authUser);
-      if (authUser) {
-        const { data: profile } = await supabase.from("users").select("avatar_url").eq("id", authUser.id).single();
-        if (profile?.avatar_url) setAvatarUrl(profile.avatar_url);
-      }
+      const { data: profile } = await supabase.from("users").select("avatar_url, daily_goal").eq("id", authUser.id).single();
+      if (profile?.daily_goal) setDailyGoal(profile.daily_goal);
+      if (profile?.avatar_url) setAvatarUrl(profile.avatar_url);
       setLoading(false);
     };
     init();
@@ -118,8 +118,18 @@ export default function SettingsPage() {
         <div className="rounded-2xl border border-white/40 p-4" style={{ background: "rgba(255,255,255,0.25)", backdropFilter: "blur(14px)", boxShadow: "0 8px 24px rgba(139,92,246,0.06)" }}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3"><span className="text-lg">🎯</span><div><h3 className="font-heading font-semibold text-[#312E81] text-sm">Daily Goal</h3><p className="text-[11px] text-[#6B7280]">{dailyGoal} min/day</p></div></div>
-            <select value={dailyGoal} onChange={(e) => setDailyGoal(Number(e.target.value))} className="rounded-full border border-white/40 bg-white/50 backdrop-blur px-3 py-1.5 text-xs text-[#312E81] outline-none cursor-pointer">
-              <option value={15}>15 min</option><option value={30}>30 min</option><option value={45}>45 min</option><option value={60}>60 min</option>
+            <select 
+              value={dailyGoal} 
+              onChange={async (e) => {
+                const val = Number(e.target.value);
+                setDailyGoal(val);
+                await supabase.from("users").update({ daily_goal: val }).eq("id", user.id);
+              }} 
+              className="rounded-full border border-white/40 bg-white/50 backdrop-blur px-3 py-1.5 text-xs text-[#312E81] outline-none cursor-pointer">
+              <option value={15}>15 min</option>
+              <option value={30}>30 min</option>
+              <option value={45}>45 min</option>
+              <option value={60}>60 min</option>
             </select>
           </div>
         </div>

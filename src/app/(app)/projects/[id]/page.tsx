@@ -32,7 +32,7 @@ export default function ProjectDetailPage() {
       setSkills(skillsData);
       // Load bookmarks filtered by project_id
       const allBookmarks = await getUserBookmarks(user.id);
-      setBookmarks(allBookmarks.filter((b: any) => b.project_id === projectId));
+setBookmarks(allBookmarks.filter((b: any) => b.project_id === projectId));
       setLoading(false);
     };
     load();

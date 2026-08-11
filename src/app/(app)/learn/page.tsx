@@ -25,7 +25,8 @@ export default function LearnPage() {
   const [projects, setProjects] = useState<any[]>([]);
   const [skills, setSkills] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [timer, setTimer] = useState(900);
+const [timer, setTimer] = useState(900);
+const [dailyGoalMinutes, setDailyGoalMinutes] = useState(15);
   const [isRunning, setIsRunning] = useState(false);
   const [lessonCompleted, setLessonCompleted] = useState(false);
   const [completing, setCompleting] = useState(false);
@@ -56,7 +57,12 @@ export default function LearnPage() {
       const { data: profile } = await supabase.from("users").select("*").eq("email", authUser.email).single();
       const currentUser = profile || { id: authUser.id, name: authUser.email?.split("@")[0] || "Bloomer" };
       setUser(currentUser);
-      
+      if (profile?.daily_goal) {
+  setDailyGoalMinutes(profile.daily_goal);
+  setTimer(profile.daily_goal * 60);
+} else {
+  setTimer(900);
+}
       const all = await getUserProjects(currentUser.id);
       const active = all.filter((p: any) => p.status === "active");
       setProjects(active);
@@ -217,7 +223,7 @@ export default function LearnPage() {
         description: bookmarkDesc, 
         url: bookmarkUrl, 
         type: bookmarkType,
-        project_id: activeProject?.id || null,  // ← ADD THIS
+        project_id: activeProject?.id || null,
       });
       setBookmarkDone(true);
       setTimeout(() => { setShowBookmark(false); setBookmarkDone(false); setBookmarkTitle(""); setBookmarkUrl(""); setBookmarkDesc(""); }, 1500);
@@ -344,7 +350,7 @@ export default function LearnPage() {
           </div>
         </div>
         <button onClick={() => setIsRunning(!isRunning)}
-          className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition ${isRunning ? "bg-emerald-100 text-emerald-700" : "bg-[#C4B5FD]/20 text-[#8B5CF6]"}`}>⏱️ {formatTime(timer)}</button>
+          className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition ${isRunning ? "bg-emerald-100 text-emerald-700" : "bg-[#C4B5FD]/20 text-[#8B5CF6]"}`}>⏱️ {formatTime(timer)} / {dailyGoalMinutes}m</button>
       </div>
 
       {lessonCompleted ? (
