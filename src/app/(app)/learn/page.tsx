@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
@@ -13,7 +13,25 @@ import { getUserProjects, getProjectSkills, updateProjectProgress, addBookmark, 
 import Markdown from "react-markdown";
 import BadgePopup from "@/components/badges/BadgePopup";
 
+// ─── Wrapper with Suspense ───
 export default function LearnPage() {
+  return (
+    <Suspense fallback={
+      <div className="max-w-6xl mx-auto px-4 lg:px-8 py-6">
+        <div className="h-8 bg-white/20 rounded w-48 mb-6 animate-pulse" />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="h-64 bg-white/15 rounded-2xl animate-pulse" />
+          <div className="lg:col-span-2 h-96 bg-white/15 rounded-2xl animate-pulse" />
+        </div>
+      </div>
+    }>
+      <LearnPageContent />
+    </Suspense>
+  );
+}
+
+// ─── Content Component (uses useSearchParams) ───
+function LearnPageContent() {
   const supabase = createClient();
   const searchParams = useSearchParams();
   const skillIdParam = searchParams.get("skill_id");
@@ -25,8 +43,8 @@ export default function LearnPage() {
   const [projects, setProjects] = useState<any[]>([]);
   const [skills, setSkills] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-const [timer, setTimer] = useState(900);
-const [dailyGoalMinutes, setDailyGoalMinutes] = useState(15);
+  const [timer, setTimer] = useState(900);
+  const [dailyGoalMinutes, setDailyGoalMinutes] = useState(15);
   const [isRunning, setIsRunning] = useState(false);
   const [lessonCompleted, setLessonCompleted] = useState(false);
   const [completing, setCompleting] = useState(false);
@@ -49,7 +67,6 @@ const [dailyGoalMinutes, setDailyGoalMinutes] = useState(15);
     transport: new DefaultChatTransport({ api: "/api/chat" }) 
   });
 
-
   useEffect(() => {
     const init = async () => {
       const { data: { user: authUser } } = await supabase.auth.getUser();
@@ -58,16 +75,15 @@ const [dailyGoalMinutes, setDailyGoalMinutes] = useState(15);
       const currentUser = profile || { id: authUser.id, name: authUser.email?.split("@")[0] || "Bloomer" };
       setUser(currentUser);
       if (profile?.daily_goal) {
-  setDailyGoalMinutes(profile.daily_goal);
-  setTimer(profile.daily_goal * 60);
-} else {
-  setTimer(900);
-}
+        setDailyGoalMinutes(profile.daily_goal);
+        setTimer(profile.daily_goal * 60);
+      } else {
+        setTimer(900);
+      }
       const all = await getUserProjects(currentUser.id);
       const active = all.filter((p: any) => p.status === "active");
       setProjects(active);
       
-      // If URL has params, load that specific skill directly
       if (skillIdParam) {
         const projId = projectIdParam || active[0]?.id;
         if (projId) {
@@ -78,7 +94,6 @@ const [dailyGoalMinutes, setDailyGoalMinutes] = useState(15);
             setActiveSkill(targetSkill);
             setActiveProject(targetProject);
             
-            // Load saved messages
             const { data: existingLessons } = await supabase
               .from("lessons")
               .select("messages")
@@ -124,7 +139,6 @@ const [dailyGoalMinutes, setDailyGoalMinutes] = useState(15);
     setActiveProject(proj);
     setLessonCompleted(false);
     
-    // Load saved messages for this skill
     const { data: existingLessons } = await supabase
       .from("lessons")
       .select("messages")
@@ -149,7 +163,6 @@ const [dailyGoalMinutes, setDailyGoalMinutes] = useState(15);
       hasInitialized.current = false;
     }
     
-    // Only auto-send if no saved messages
     if (!hasInitialized.current) {
       hasInitialized.current = true;
       setTimeout(() => sendMessage({ 
@@ -176,7 +189,6 @@ const [dailyGoalMinutes, setDailyGoalMinutes] = useState(15);
       const next = allSkills.find((s: any) => s.status === "locked");
       if (next) await supabase.from("skills").update({ status: "active" }).eq("id", next.id);
       
-      // Update existing lesson or create new one
       const { data: existingLesson } = await supabase
         .from("lessons")
         .select("id")
@@ -230,6 +242,7 @@ const [dailyGoalMinutes, setDailyGoalMinutes] = useState(15);
     } catch {}
     finally { setBookmarkSaving(false); }
   };
+
   const isLoading = status === "submitted" || status === "streaming";
 
   if (loading) {
@@ -254,7 +267,6 @@ const [dailyGoalMinutes, setDailyGoalMinutes] = useState(15);
     );
   }
 
-  // No project selected — show project picker
   if (!activeProject) {
     return (
       <div className="max-w-6xl mx-auto px-4 lg:px-8 py-6">
@@ -292,7 +304,6 @@ const [dailyGoalMinutes, setDailyGoalMinutes] = useState(15);
     );
   }
 
-  // No skill selected — show skill picker
   if (!activeSkill) {
     return (
       <div className="max-w-6xl mx-auto px-4 lg:px-8 py-6">
@@ -338,7 +349,6 @@ const [dailyGoalMinutes, setDailyGoalMinutes] = useState(15);
     );
   }
 
-  // Active skill — show chat
   return (
     <div className="max-w-6xl mx-auto px-4 lg:px-8 py-6">
       <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
@@ -413,25 +423,25 @@ const [dailyGoalMinutes, setDailyGoalMinutes] = useState(15);
                   </div>
                 )}
                 {messages.map((msg) => (
-  <div key={msg.id} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-    <div className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm ${msg.role === "user" ? "bg-gradient-to-r from-[#8B5CF6] to-[#A78BFA] text-white" : "bg-white/60 backdrop-blur text-[#312E81] border border-white/40"}`}>
-      {msg.parts?.map((part: any, i: number) => part.type === "text" ? <Markdown key={i}>{part.text}</Markdown> : null)}
-      {msg.role === "assistant" && !isLoading && (
-        <div className="flex gap-2 mt-2">
-          <button onClick={() => sendMessage({ text: "Please continue." })} className="text-[#6B7280] hover:text-[#8B5CF6] p-1 rounded-full hover:bg-white/40" title="Continue">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6" /></svg>
-          </button>
-          <button onClick={() => { const u = [...messages].reverse().find(m => m.role === "user"); const part = u?.parts?.find((p: any) => p.type === "text"); const t = part && "text" in part ? part.text : ""; if (t) sendMessage({ text: t }); }} className="text-[#6B7280] hover:text-[#8B5CF6] p-1 rounded-full hover:bg-white/40" title="Retry">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="23 4 23 10 17 10" /><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" /></svg>
-          </button>
-          <button onClick={() => { const part = msg.parts?.find((p: any) => p.type === "text"); const t = part && "text" in part ? part.text : ""; if (t) navigator.clipboard.writeText(t); }} className="text-[#6B7280] hover:text-[#8B5CF6] p-1 rounded-full hover:bg-white/40" title="Copy">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" /></svg>
-          </button>
-        </div>
-      )}
-    </div>
-  </div>
-))}
+                  <div key={msg.id} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+                    <div className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm ${msg.role === "user" ? "bg-gradient-to-r from-[#8B5CF6] to-[#A78BFA] text-white" : "bg-white/60 backdrop-blur text-[#312E81] border border-white/40"}`}>
+                      {msg.parts?.map((part: any, i: number) => part.type === "text" ? <Markdown key={i}>{part.text}</Markdown> : null)}
+                      {msg.role === "assistant" && !isLoading && (
+                        <div className="flex gap-2 mt-2">
+                          <button onClick={() => sendMessage({ text: "Please continue." })} className="text-[#6B7280] hover:text-[#8B5CF6] p-1 rounded-full hover:bg-white/40" title="Continue">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6" /></svg>
+                          </button>
+                          <button onClick={() => { const u = [...messages].reverse().find(m => m.role === "user"); const part = u?.parts?.find((p: any) => p.type === "text"); const t = part && "text" in part ? part.text : ""; if (t) sendMessage({ text: t }); }} className="text-[#6B7280] hover:text-[#8B5CF6] p-1 rounded-full hover:bg-white/40" title="Retry">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="23 4 23 10 17 10" /><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" /></svg>
+                          </button>
+                          <button onClick={() => { const part = msg.parts?.find((p: any) => p.type === "text"); const t = part && "text" in part ? part.text : ""; if (t) navigator.clipboard.writeText(t); }} className="text-[#6B7280] hover:text-[#8B5CF6] p-1 rounded-full hover:bg-white/40" title="Copy">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" /></svg>
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
                 {status === "submitted" && <div className="flex justify-start"><div className="bg-white/40 rounded-2xl px-4 py-3 text-sm text-[#6B7280] animate-pulse">Elsa is thinking...</div></div>}
                 <div ref={bottomRef} />
               </div>
@@ -451,7 +461,6 @@ const [dailyGoalMinutes, setDailyGoalMinutes] = useState(15);
         </div>
       )}
 
-      {/* Bookmark Modal */}
       <AnimatePresence>
         {showBookmark && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm px-4">
@@ -492,7 +501,6 @@ const [dailyGoalMinutes, setDailyGoalMinutes] = useState(15);
         )}
       </AnimatePresence>
       
-      {/* Badge Popup */}
       <BadgePopup badge={showBadgePopup} onClose={() => setShowBadgePopup(null)} />
     </div>
   );
