@@ -100,16 +100,21 @@ export default function ProfilePage() {
               <p className="text-xs text-[#6B7280]">Complete lessons to earn badges!</p>
             </div>
           ) : (
-            <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-              {badges.slice(0, 8).map((badge) => (
-                <div key={badge.id} className="text-center p-2 rounded-xl bg-white/40 hover:scale-105 transition">
-                  <span className="text-2xl">{badge.badge_icon}</span>
-                  <p className="text-[10px] font-semibold text-[#312E81] mt-1">{badge.badge_name}</p>
-                </div>
-              ))}
-            </div>
-          )}
+            <div className="flex flex-wrap gap-4 justify-center">
+  {badges.slice(0, 8).map((badge) => (
+    <div key={badge.id} className="flex flex-col items-center hover:scale-110 transition">
+      <img 
+        src={getBadgeImage(badge.badge_name)} 
+        alt={badge.badge_name} 
+        className="w-12 h-12 sm:w-14 sm:h-14 object-contain"
+        onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+      />
+    </div>
+  ))}
+</div>
+          )}  
         </div>
+          
       </div>
 
       <div className="rounded-2xl border border-white/40 p-4 flex items-center gap-3"
@@ -126,4 +131,23 @@ export default function ProfilePage() {
       </div>
     </div>
   );
+}
+function getBadgeImage(badgeName: string): string {
+  const map: Record<string, string> = {
+    "First Step 🌱": "/first_step.png",
+    "Code Gardener 🌿": "/code_gardener.png",
+    "Knowledge Seeker 📚": "/knowledge_seeker.png",
+    "Scholar Owl 🦉": "/scholar_owl.png",
+    "Perfect Score ⭐": "/perfect_score.png",
+    "Precision Master 🎯": "/precision_master.png",
+    "Project Starter 🚀": "/project_starter.png",
+    "Builder 🏗️": "/builder.png",
+    "Project Master 🏆": "/project_master.png",
+    "Ship It! 🚢": "/ship_it.png",
+    "Triple Threat 🔥": "/triple_threat.png",
+    "Consistent 🌟": "/consistent.png",
+    "Weekly Warrior 🔥": "/weekly_warrior.png",
+    "Monthly Master 👑": "/monthly_master.png",
+  };
+  return map[badgeName] || "";
 }

@@ -258,22 +258,28 @@ export default function ArchivePage() {
           </>
         )}
 
-        {/* BADGES TAB */}
-        {activeTab === "badges" && (
-          data?.badges?.length === 0 ? <EmptyState icon="🏆" message="No badges earned yet." cta="Start Learning" href="/learn" img="/pose2.png" /> : (
-            <div className="grid grid-cols-3 lg:grid-cols-5 gap-1.5 lg:gap-3">
-              {data?.badges?.map((badge: any) => (
-                <motion.div key={badge.id} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
-                  className="rounded-2xl border border-white/40 p-1.5 lg:p-3 text-center hover:scale-105 transition"
-                  style={{ background: "rgba(255,255,255,0.25)", backdropFilter: "blur(14px)", boxShadow: "0 8px 24px rgba(139,92,246,0.06)" }}>
-                  <span className="text-xl lg:text-3xl">{badge.badge_icon}</span>
-                  <h4 className="font-heading font-semibold text-[9px] lg:text-xs text-[#312E81] mt-0.5">{badge.badge_name}</h4>
-                  <p className="text-[9px] text-[#6B7280]">+{badge.xp_reward} XP</p>
-                </motion.div>
-              ))}
-            </div>
-          )
-        )}
+   {/* BADGES TAB */}
+{activeTab === "badges" && (
+  data?.badges?.length === 0 ? (
+    <EmptyState icon="🏆" message="No badges earned yet." cta="Start Learning" href="/learn" img="/pose2.png" />
+  ) : (
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6 lg:gap-8 justify-items-center py-4">
+      {data?.badges?.map((badge: any) => (
+        <motion.div key={badge.id} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
+          className="flex flex-col items-center hover:scale-110 transition">
+          <img 
+            src={getBadgeImage(badge.badge_name)} 
+            alt={badge.badge_name} 
+            className="w-28 h-28 lg:w-28 lg:h-28 object-contain"
+            onError={(e) => { 
+              (e.target as HTMLImageElement).style.display = "none"; 
+            }}
+          />
+        </motion.div>
+      ))}
+    </div>
+  )
+)}
 
  {/* CERTIFICATES TAB */}
 {activeTab === "certificates" && (
@@ -514,4 +520,23 @@ function EmptyState({ icon, message, cta, href, img }: { icon: string; message: 
       <Link href={href} className="inline-block mt-2 lg:mt-3 rounded-full bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] px-3 py-1.5 text-[10px] lg:text-sm font-semibold text-white hover:scale-105 transition">{cta}</Link>
     </div>
   );
+}
+function getBadgeImage(badgeName: string): string {
+  const map: Record<string, string> = {
+    "First Step 🌱": "/first_step.png",
+    "Code Gardener 🌿": "/code_gardener.png",
+    "Knowledge Seeker 📚": "/knowledge_seeker.png",
+    "Scholar Owl 🦉": "/scholar_owl.png",
+    "Perfect Score ⭐": "/perfect_score.png",
+    "Precision Master 🎯": "/precision_master.png",
+    "Project Starter 🚀": "/project_starter.png",
+    "Builder 🏗️": "/builder.png",
+    "Project Master 🏆": "/project_master.png",
+    "Ship It! 🚢": "/ship_it.png",
+    "Triple Threat 🔥": "/triple_threat.png",
+    "Consistent 🌟": "/consistent.png",
+    "Weekly Warrior 🔥": "/weekly_warrior.png",
+    "Monthly Master 👑": "/monthly_master.png",
+  };
+  return map[badgeName] || "";
 }

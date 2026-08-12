@@ -139,11 +139,16 @@ export default function DashboardPage() {
           ) : (
             <div className="grid grid-cols-2 gap-2 lg:gap-3">
               {badges.slice(0, 4).map((badge) => (
-                <div key={badge.id} className="rounded-xl bg-white/40 border border-white/40 p-3 text-center hover:scale-105 transition">
-                  <span className="text-xl lg:text-2xl">{badge.badge_icon}</span>
-                  <p className="text-xs font-semibold text-[#312E81] mt-1">{badge.badge_name}</p>
-                </div>
-              ))}
+  <div key={badge.id} className="rounded-xl bg-white/40 border border-white/40 p-3 text-center hover:scale-105 transition">
+    <img 
+      src={getBadgeImage(badge.badge_name)} 
+      alt={badge.badge_name} 
+      className="w-10 h-10 lg:w-12 lg:h-12 object-contain mx-auto"
+      onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+    />
+    <p className="text-xs font-semibold text-[#312E81] mt-1">{badge.badge_name}</p>
+  </div>
+))}
             </div>
           )}
           {badges.length > 4 && <p className="text-center text-xs text-[#6B7280] mt-3">+{badges.length - 4} more</p>}
@@ -176,4 +181,23 @@ export default function DashboardPage() {
       </div>
     </div>
   );
+}
+function getBadgeImage(badgeName: string): string {
+  const map: Record<string, string> = {
+    "First Step 🌱": "/first_step.png",
+    "Code Gardener 🌿": "/code_gardener.png",
+    "Knowledge Seeker 📚": "/knowledge_seeker.png",
+    "Scholar Owl 🦉": "/scholar_owl.png",
+    "Perfect Score ⭐": "/perfect_score.png",
+    "Precision Master 🎯": "/precision_master.png",
+    "Project Starter 🚀": "/project_starter.png",
+    "Builder 🏗️": "/builder.png",
+    "Project Master 🏆": "/project_master.png",
+    "Ship It! 🚢": "/ship_it.png",
+    "Triple Threat 🔥": "/triple_threat.png",
+    "Consistent 🌟": "/consistent.png",
+    "Weekly Warrior 🔥": "/weekly_warrior.png",
+    "Monthly Master 👑": "/monthly_master.png",
+  };
+  return map[badgeName] || "";
 }
