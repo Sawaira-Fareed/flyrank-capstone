@@ -42,21 +42,43 @@ const sparkles = Array.from({ length: 20 }).map((_, i) => ({
 
 export default function BadgePopup({ badge, onClose }: BadgePopupProps) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const stopSound = () => {
+    if (audioRef.current) {
+      try {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      } catch {}
+    }
+  };
+
+  const handleClose = () => {
+    stopSound();
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    onClose();
+  };
 
   useEffect(() => {
     if (badge) {
       // Play sound
       try {
         audioRef.current = new Audio("/badge-earned.mp3");
-        audioRef.current.volume = 0.6;
-        audioRef.current.play();
+        audioRef.current.volume = 0.5;
+        audioRef.current.play().catch(() => {});
       } catch {}
 
-      // Auto-dismiss after 4 seconds
-      const timer = setTimeout(onClose, 4000);
-      return () => clearTimeout(timer);
+      // Auto-dismiss after 5 seconds
+      timeoutRef.current = setTimeout(() => {
+        handleClose();
+      }, 5000);
     }
-  }, [badge, onClose]);
+
+    return () => {
+      // Cleanup on unmount only — don't clear timer here
+      stopSound();
+    };
+  }, [badge]);
 
   const badgeImage = badge ? badgeImageMap[badge.badge_name] || "/first_step.png" : null;
 
@@ -67,7 +89,7 @@ export default function BadgePopup({ badge, onClose }: BadgePopupProps) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          onClick={onClose}
+          onClick={handleClose}
           className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm cursor-pointer"
         >
           {/* Sparkles */}
@@ -92,7 +114,6 @@ export default function BadgePopup({ badge, onClose }: BadgePopupProps) {
             className="relative bg-gradient-to-b from-[#FFFBF5] to-[#F3EEFA] rounded-3xl p-8 text-center max-w-sm w-full mx-4 border-4 border-[#C4B5FD]/40 shadow-2xl cursor-default"
             style={{ boxShadow: "0 0 80px rgba(139,92,246,0.4)" }}
           >
-            {/* Badge Image */}
             {badgeImage && (
               <motion.div
                 initial={{ scale: 0, rotate: -30 }}
@@ -109,7 +130,6 @@ export default function BadgePopup({ badge, onClose }: BadgePopupProps) {
               </motion.div>
             )}
 
-            {/* Badge Name */}
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}

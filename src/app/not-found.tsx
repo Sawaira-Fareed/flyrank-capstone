@@ -1,4 +1,5 @@
 "use client"
+import BadgePopup from "@/components/badges/BadgePopup"
 
 import Link from "next/link"
 import { useState, useEffect, useCallback } from "react"
@@ -89,7 +90,7 @@ export default function NotFound() {
   const [level] = useState(12)
   const [xp, setXp] = useState(650)
   const [searchQuery, setSearchQuery] = useState("")
-
+const [showBadgePopup, setShowBadgePopup] = useState<any>(null);
   useEffect(() => {
     setBoard(generateBoard())
     setMounted(true)
@@ -483,6 +484,19 @@ export default function NotFound() {
         @keyframes fadeIn { 0%{opacity:0} 100%{opacity:1} }
         @keyframes confettiFall { 0%{transform:translateY(0) rotate(0deg);opacity:1} 100%{transform:translateY(100vh) rotate(720deg);opacity:0} }
       `}</style>
+      {/* TEMPORARY TEST BUTTON */}
+<button 
+  onClick={() => setShowBadgePopup({
+    badge_name: "Builder 🏗️",
+    badge_icon: "🏗️",
+    badge_description: "Created 3 projects",
+    xp_reward: 200,
+  })}
+  className="fixed bottom-4 left-4 z-50 rounded-full bg-black/50 px-4 py-2 text-xs text-white">
+  🧪 Test Badge Popup
+</button>
+      <BadgePopup badge={showBadgePopup} onClose={() => setShowBadgePopup(null)} />
     </div>
+    
   )
 }
