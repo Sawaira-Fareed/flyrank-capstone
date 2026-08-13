@@ -6,7 +6,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { Search, Plus, MoreHorizontal, Edit3, Trash2, Archive, X } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
-import { getUserProjects, createProject } from "@/lib/store";
+import { getUserProjects, createProject, getUserBadges, getNewBadgeEarned } from "@/lib/store";
+import BadgePopup from "@/components/badges/BadgePopup";
 
 function CardSkeleton() {
   return (
@@ -34,6 +35,7 @@ export default function ProjectsPage() {
   const [creating, setCreating] = useState(false);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [showDelete, setShowDelete] = useState<string | null>(null);
+  const [showBadgePopup, setShowBadgePopup] = useState<any>(null);
 
   const supabase = createClient();
 
@@ -56,6 +58,9 @@ export default function ProjectsPage() {
     if (!newGoal.trim() || !userId) return;
     setCreating(true);
     try {
+      // Get badges BEFORE creating project
+      const badgesBefore = await getUserBadges(userId);
+      
       const project = await createProject(userId, newGoal.trim());
       if (project) {
         try {
@@ -96,6 +101,10 @@ export default function ProjectsPage() {
         } catch {}
         setNewGoal(""); setShowCreate(false);
         loadProjects(userId);
+        
+        // Check for new badge
+        const newBadge = await getNewBadgeEarned(userId, badgesBefore);
+        if (newBadge) setShowBadgePopup(newBadge);
       }
     } finally { setCreating(false); }
   };
@@ -328,6 +337,9 @@ export default function ProjectsPage() {
           ))}
         </div>
       )}
+      
+      {/* Badge Popup */}
+      <BadgePopup badge={showBadgePopup} onClose={() => setShowBadgePopup(null)} />
     </div>
   );
 }

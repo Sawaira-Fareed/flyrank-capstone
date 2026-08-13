@@ -7,7 +7,8 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, Trash2, Play, Bookmark, ExternalLink } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
-import { getProjectSkills, getUserBookmarks } from "@/lib/store";
+import { getProjectSkills, getUserBookmarks, getUserBadges, getNewBadgeEarned } from "@/lib/store";
+import BadgePopup from "@/components/badges/BadgePopup";
 
 export default function ProjectDetailPage() {
   const params = useParams();
@@ -21,18 +22,20 @@ export default function ProjectDetailPage() {
   const [loading, setLoading] = useState(true);
   const [showDelete, setShowDelete] = useState(false);
   const [archiving, setArchiving] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [showBadgePopup, setShowBadgePopup] = useState<any>(null);
 
   useEffect(() => {
     const load = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { setLoading(false); return; }
+      setUserId(user.id);
       const { data: proj } = await supabase.from("projects").select("*").eq("id", projectId).single();
       setProject(proj);
       const skillsData = await getProjectSkills(projectId);
       setSkills(skillsData);
-      // Load bookmarks filtered by project_id
       const allBookmarks = await getUserBookmarks(user.id);
-setBookmarks(allBookmarks.filter((b: any) => b.project_id === projectId));
+      setBookmarks(allBookmarks.filter((b: any) => b.project_id === projectId));
       setLoading(false);
     };
     load();
@@ -44,13 +47,18 @@ setBookmarks(allBookmarks.filter((b: any) => b.project_id === projectId));
   };
 
   const handleArchive = async () => {
+    if (!userId) return;
     setArchiving(true);
+    const badgesBefore = await getUserBadges(userId);
     const isComplete = (project.progress || 0) >= 100;
-    await supabase.from("projects").update({ 
-      status: isComplete ? "completed" : "saved_for_later" 
-    }).eq("id", projectId);
+    await supabase.from("projects").update({ status: isComplete ? "completed" : "saved_for_later" }).eq("id", projectId);
     setProject({ ...project, status: isComplete ? "completed" : "saved_for_later" });
     setArchiving(false);
+    
+    if (isComplete) {
+      const newBadge = await getNewBadgeEarned(userId, badgesBefore);
+      if (newBadge) setShowBadgePopup(newBadge);
+    }
   };
 
   if (loading) {
@@ -114,9 +122,7 @@ setBookmarks(allBookmarks.filter((b: any) => b.project_id === projectId));
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Column */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Progress Card */}
           <div className="rounded-2xl border border-white/40 p-5 lg:p-6"
             style={{ background: "rgba(255,255,255,0.25)", backdropFilter: "blur(14px)", boxShadow: "0 8px 24px rgba(139,92,246,0.06)" }}>
             <h2 className="font-heading font-semibold text-[#312E81] mb-4">Progress</h2>
@@ -138,7 +144,6 @@ setBookmarks(allBookmarks.filter((b: any) => b.project_id === projectId));
               style={{ boxShadow: "0 4px 16px rgba(139,92,246,0.25)" }}><Play size={16} /> Continue Learning</Link>
           </div>
 
-          {/* Skills Card */}
           <div className="rounded-2xl border border-white/40 p-5 lg:p-6"
             style={{ background: "rgba(255,255,255,0.25)", backdropFilter: "blur(14px)", boxShadow: "0 8px 24px rgba(139,92,246,0.06)" }}>
             <h2 className="font-heading font-semibold text-[#312E81] mb-4">Skills to Learn</h2>
@@ -170,15 +175,12 @@ setBookmarks(allBookmarks.filter((b: any) => b.project_id === projectId));
           </div>
         </div>
 
-        {/* Right Column */}
         <div className="space-y-4">
-          {/* About Card */}
           <div className="rounded-2xl border border-white/40 p-5" style={{ background: "rgba(255,255,255,0.25)", backdropFilter: "blur(14px)", boxShadow: "0 8px 24px rgba(139,92,246,0.06)" }}>
             <h3 className="font-heading font-semibold text-[#312E81] mb-3 text-sm">About</h3>
             <p className="text-sm text-[#6B7280]">{project.goal}</p>
           </div>
           
-          {/* Status Card */}
           <div className="rounded-2xl border border-white/40 p-5" style={{ background: "rgba(255,255,255,0.25)", backdropFilter: "blur(14px)", boxShadow: "0 8px 24px rgba(139,92,246,0.06)" }}>
             <h3 className="font-heading font-semibold text-[#312E81] mb-3 text-sm">Status</h3>
             <span className={`rounded-full px-3 py-1 text-xs font-semibold ${
@@ -190,7 +192,6 @@ setBookmarks(allBookmarks.filter((b: any) => b.project_id === projectId));
             </span>
           </div>
 
-          {/* Resources Card */}
           <div className="rounded-2xl border border-white/40 p-5" style={{ background: "rgba(255,255,255,0.25)", backdropFilter: "blur(14px)", boxShadow: "0 8px 24px rgba(139,92,246,0.06)" }}>
             <h3 className="font-heading font-semibold text-[#312E81] mb-3 text-sm flex items-center gap-2">
               <Bookmark size={16} className="text-[#8B5CF6]" /> Resources
@@ -221,6 +222,9 @@ setBookmarks(allBookmarks.filter((b: any) => b.project_id === projectId));
           </div>
         </div>
       </div>
+      
+      {/* Badge Popup — inside main div */}
+      <BadgePopup badge={showBadgePopup} onClose={() => setShowBadgePopup(null)} />
     </div>
   );
 }

@@ -369,7 +369,7 @@ export default function NotFound() {
                       </div>
                       <span className="text-[10px] font-medium text-[#6b5a4a]">Learn</span>
                     </Link>
-                    <Link href="/arhive" className="flex flex-col items-center gap-1 p-2 rounded-xl transition-colors group">
+                    <Link href="/archive" className="flex flex-col items-center gap-1 p-2 rounded-xl transition-colors group">
                       <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#c1e1c1] to-[#d8f0d8] flex items-center justify-center border border-[#a8d4a8]/30 group-hover:scale-110 group-hover:bg-gradient-to-br group-hover:from-[#a8d4a8] group-hover:to-[#c1e1c1] transition-all">
                         <Code className="w-5 h-5 text-[#5a965a]" />
                       </div>

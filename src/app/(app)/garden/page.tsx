@@ -7,7 +7,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Search, ArrowRight, Plus, Loader2 } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
-import { getUserProjects, getUserStats, createProject } from "@/lib/store";
+import { getUserProjects, getUserStats, createProject, getUserBadges, getNewBadgeEarned } from "@/lib/store";
+import BadgePopup from "@/components/badges/BadgePopup";
 
 function CardSkeleton() {
   return (
@@ -34,6 +35,7 @@ export default function GardenPage() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [modalGoal, setModalGoal] = useState("");
   const [modalCreating, setModalCreating] = useState(false);
+  const [showBadgePopup, setShowBadgePopup] = useState<any>(null);
 
   const loadData = useCallback(async (userId: string) => {
     const [userProjects, userStats] = await Promise.all([getUserProjects(userId), getUserStats(userId)]);
@@ -59,6 +61,9 @@ export default function GardenPage() {
     else setCreating(true);
     
     try {
+      // Get badges BEFORE creating project
+      const badgesBefore = await getUserBadges(user.id);
+      
       const project = await createProject(user.id, goal);
       if (project) {
         try {
@@ -66,12 +71,7 @@ export default function GardenPage() {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              messages: [
-                {
-                  role: "user",
-                  content: `[SKILL_MAP_REQUEST] Generate a skill map for a project called "${goal}". The project goal is: "${goal}". Return ONLY a JSON array of skills.`,
-                },
-              ],
+              messages: [{ role: "user", content: `[SKILL_MAP_REQUEST] Generate a skill map for a project called "${goal}". The project goal is: "${goal}". Return ONLY a JSON array of skills.` }],
             }),
           });
 
@@ -79,28 +79,23 @@ export default function GardenPage() {
             const fullText = await res.text();
             let skills = [];
             const jsonMatch = fullText.match(/\[[\s\S]*\]/);
-            if (jsonMatch) {
-              try { skills = JSON.parse(jsonMatch[0]); } catch {}
-            }
-
+            if (jsonMatch) { try { skills = JSON.parse(jsonMatch[0]); } catch {} }
             if (skills.length > 0) {
-              await supabase.from("skills").insert(
-                skills.map((s: any, i: number) => ({
-                  project_id: project.id,
-                  name: s.name,
-                  description: s.description || "",
-                  days: s.days || 2,
-                  status: i === 0 ? "active" : "locked",
-                  sort_order: i,
-                }))
-              );
+              await supabase.from("skills").insert(skills.map((s: any, i: number) => ({
+                project_id: project.id, name: s.name, description: s.description || "", days: s.days || 2, status: i === 0 ? "active" : "locked", sort_order: i,
+              })));
             }
           }
         } catch {}
+        
         setNewGoal("");
         setModalGoal("");
         setShowCreateModal(false);
         await loadData(user.id);
+        
+        // Check for new badge
+        const newBadge = await getNewBadgeEarned(user.id, badgesBefore);
+        if (newBadge) setShowBadgePopup(newBadge);
       }
     } finally { 
       setCreating(false); 
@@ -154,9 +149,7 @@ export default function GardenPage() {
         </div>
       </motion.div>
 
-      {/* Main Layout: Projects (Left) + Sidebar Cards (Right) */}
       <div className="mt-10 lg:mt-12 flex flex-col lg:flex-row gap-6 lg:gap-8">
-        {/* LEFT — Projects */}
         <div className="flex-1 min-w-0">
           <h2 className="font-heading text-lg lg:text-xl font-semibold text-[#312E81] mb-4">
             {activeProjects.length > 0 ? "Continue Learning" : "Your Garden"}
@@ -197,7 +190,6 @@ export default function GardenPage() {
           )}
         </div>
 
-        {/* RIGHT — Sidebar Cards: Streak → Today's Goal → Mascot */}
         <div className="lg:w-56 shrink-0 flex flex-col gap-4">
           <div className="rounded-2xl border border-white/40 p-4 text-center"
             style={{ background: "rgba(255,255,255,0.25)", backdropFilter: "blur(14px)", boxShadow: "0 8px 24px rgba(139,92,246,0.08)" }}>
@@ -248,6 +240,9 @@ export default function GardenPage() {
           </motion.div>
         </div>
       )}
+
+      {/* Badge Popup */}
+      <BadgePopup badge={showBadgePopup} onClose={() => setShowBadgePopup(null)} />
     </div>
   );
 }
