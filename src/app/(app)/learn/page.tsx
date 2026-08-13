@@ -12,7 +12,7 @@ import { createClient } from "@/utils/supabase/client";
 import { getUserProjects, getProjectSkills, updateProjectProgress, addBookmark, getUserBadges, getNewBadgeEarned } from "@/lib/store";
 import Markdown from "react-markdown";
 import BadgePopup from "@/components/badges/BadgePopup";
-
+import ToolPartRenderer from "@/components/tools/ToolPartRenderer";
 // ─── Wrapper with Suspense ───
 export default function LearnPage() {
   return (
@@ -63,9 +63,9 @@ function LearnPageContent() {
   const [showBadgePopup, setShowBadgePopup] = useState<any>(null);
   const [savedMessages, setSavedMessages] = useState<any[]>([]);
 
-  const { messages, sendMessage, status, stop, setMessages } = useChat({ 
-    transport: new DefaultChatTransport({ api: "/api/chat" }) 
-  });
+  const { messages, sendMessage, status, stop, setMessages, error, regenerate } = useChat({ 
+  transport: new DefaultChatTransport({ api: "/api/chat" }) 
+});
 
   useEffect(() => {
     const init = async () => {
@@ -425,7 +425,34 @@ function LearnPageContent() {
                 {messages.map((msg) => (
                   <div key={msg.id} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
                     <div className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm ${msg.role === "user" ? "bg-gradient-to-r from-[#8B5CF6] to-[#A78BFA] text-white" : "bg-white/60 backdrop-blur text-[#312E81] border border-white/40"}`}>
-                      {msg.parts?.map((part: any, i: number) => part.type === "text" ? <Markdown key={i}>{part.text}</Markdown> : null)}
+                     {msg.parts?.map((part: any, i: number) => {
+  if (part.type === "text") {
+    return <Markdown key={i}>{part.text}</Markdown>;
+  }
+  if (part.type === "tool-getLearningContext") {
+    if (part.state === "input-streaming") {
+      return (
+        <ToolPartRenderer key={i} toolName="getLearningContext" state="input-streaming" />
+      );
+    }
+    if (part.state === "input-available") {
+      return (
+        <ToolPartRenderer key={i} toolName="getLearningContext" state="input-available" input={part.input} />
+      );
+    }
+    if (part.state === "output-available") {
+      return (
+        <ToolPartRenderer key={i} toolName="getLearningContext" state="output-available" output={part.output} />
+      );
+    }
+    if (part.state === "output-error") {
+      return (
+        <ToolPartRenderer key={i} toolName="getLearningContext" state="output-error" error={part.error} />
+      );
+    }
+  }
+  return null;
+})}
                       {msg.role === "assistant" && !isLoading && (
                         <div className="flex gap-2 mt-2">
                           <button onClick={() => sendMessage({ text: "Please continue." })} className="text-[#6B7280] hover:text-[#8B5CF6] p-1 rounded-full hover:bg-white/40" title="Continue">
@@ -442,7 +469,23 @@ function LearnPageContent() {
                     </div>
                   </div>
                 ))}
+               
                 {status === "submitted" && <div className="flex justify-start"><div className="bg-white/40 rounded-2xl px-4 py-3 text-sm text-[#6B7280] animate-pulse">Elsa is thinking...</div></div>}
+
+{/* Add this right after — Error state */}
+{error && (
+  <div className="flex justify-center">
+    <div className="bg-red-50/60 rounded-2xl px-4 py-3 text-sm text-red-500 flex items-center gap-2">
+      <span>❌ Connection failed</span>
+      <button 
+        onClick={() => regenerate()}
+        className="underline font-semibold text-red-600 hover:text-red-700 ml-2"
+      >
+        Retry
+      </button>
+    </div>
+  </div>
+)}
                 <div ref={bottomRef} />
               </div>
               <div className="border-t border-white/30 p-3 lg:p-4">
