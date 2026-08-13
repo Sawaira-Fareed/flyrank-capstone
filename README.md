@@ -1,3 +1,17 @@
+
+# 🌸 BloomLab — AI-Powered Project-Based Learning Platform
+
+**Tagline:** *Learning grows naturally.*
+
+BloomLab is an AI-powered coding learning platform where learners learn by **building real projects**, guided by **Elsa**, their personal AI mentor.
+
+Instead of passive theory, learners choose something they want to build, Elsa identifies the skills required, creates a personalized learning path, and guides the learner through focused 15-minute lessons until the project becomes portfolio-ready.
+
+## 🚀 Live Demo
+
+**Production:** https://flyrank-capstone-rosy.vercel.app
+
+---
 # FlyRank Capstone
 
 Frontend AI Engineering Capstone project.
@@ -13,22 +27,7 @@ Frontend AI Engineering Capstone project.
 npm install
 npm run dev
  Yes. I’ll keep it **concise and README-focused**, with the **FE-07 assignment fully included** and without unnecessary project-structure/detail bloat.
-
-````markdown
-# 🌸 BloomLab — AI-Powered Project-Based Learning Platform
-
-**Tagline:** *Learning grows naturally.*
-
-BloomLab is an AI-powered coding learning platform where learners learn by **building real projects**, guided by **Elsa**, their personal AI mentor.
-
-Instead of passive theory, learners choose something they want to build, Elsa identifies the skills required, creates a personalized learning path, and guides the learner through focused 15-minute lessons until the project becomes portfolio-ready.
-
-## 🚀 Live Demo
-
-**Production:** https://flyrank-capstone-rosy.vercel.app
-
----
-
+```
 ## ✨ Features
 
 ### 🌱 Project-First Learning
@@ -258,6 +257,7 @@ src/app/api/chat/route.ts
 src/components/tools/LearningSummaryCard.tsx
 src/components/tools/ToolPartRenderer.tsx
 ```
+# 🧪 Testing
 
 ## FE-07 Test
 
@@ -273,27 +273,23 @@ Show my learning summary
 
 The displayed information should correspond to the authenticated learner's data from Supabase.
 
+## AI Error State
+
+```text
+1. Open browser DevTools
+2. Go to Network
+3. Enable Offline
+4. Ask Elsa a question
+5. Verify the connection error and Retry action
+```
+
 ---
 
-# 🗄️ Database
 
-BloomLab uses **Supabase PostgreSQL**.
-
-| Table           | Purpose                                      |
-| --------------- | -------------------------------------------- |
-| `users`         | User profile, streak, XP, daily goal, avatar |
-| `projects`      | Project information and progress             |
-| `skills`        | Project learning skills                      |
-| `lessons`       | Lesson content, messages, scores, completion |
-| `notes`         | Learner notes                                |
-| `bookmarks`     | Saved resources                              |
-| `user_badges`   | Earned badges                                |
-| `certificates`  | Generated certificate data                   |
-| `notifications` | User notifications                           |
 
 ### Automatic Progression
 
-```text
+
 Lesson Complete
     ↓
 +50 XP
@@ -318,7 +314,6 @@ Project Completed
 +200 XP
 Notification
 Badge check
-```
 
 ---
 
@@ -344,19 +339,7 @@ Badge check
 
 # 🌸 404 Experience
 
-BloomLab includes a themed 404 experience instead of a plain error screen.
-
-The **Bloom Forest** experience includes:
-
-* Bloom Forest background
-* Elsa searching animation
-* Thinking and shrug states
-* Falling petals
-* Sparkles
-* Wooden 404 sign
-* Mini quest interaction
-* Found-page celebration
-* Bloom-themed feedback
+BloomLab includes a themed 404 gamified experience instead of a plain error screen.
 
 Implementation:
 
@@ -388,15 +371,6 @@ Elsa is BloomLab's AI mentor.
 
 Her personality is designed around a warm, garden-themed learning experience. She is encouraging, concise, and focused on helping learners complete their projects.
 
-Different Elsa assets are used for different learning moments:
-
-```text
-idle.png
-laptop.png
-mission_complete.png
-elsa-happy-jump.png
-flower.png
-```
 
 ---
 
@@ -410,69 +384,12 @@ flower.png
 * Groq API key
 * Gemini API key
 
-## Installation
-
-```bash
-git clone https://github.com/Sawaira-Fareed/flyrank-capstone.git
-
-cd flyrank-capstone
-
-npm install --legacy-peer-deps
-```
-
-Create `.env.local`:
-
-```env
-OPENROUTER_API_KEY=...
-GROQ_API_KEY=...
-GOOGLE_GENERATIVE_AI_API_KEY=...
-
-NEXT_PUBLIC_SUPABASE_URL=...
-NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=...
-
-NEXT_PUBLIC_FIREBASE_API_KEY=...
-```
-
-Start the development server:
-
-```bash
-npm run dev
-```
-
----
-
-# 🧪 Testing
-
-## FE-07
-
-```text
-1. Open Learn
-2. Ask Elsa: "Show my learning summary"
-3. Verify LearningSummaryCard appears
-4. Verify the displayed data comes from the authenticated user
-```
-
-## AI Error State
-
-```text
-1. Open browser DevTools
-2. Go to Network
-3. Enable Offline
-4. Ask Elsa a question
-5. Verify the connection error and Retry action
-```
 
 ---
 
 # 📜 License
 
-ISC License — FlyRank Internship Capstone Project.
+Personal Project.
 
 ---
 
-**Built with 🌸 by the BloomLab team — FlyRank Frontend AI Engineering Internship.**
-
-```
-
-The uploaded source confirms the **FE-07 `getLearningContext` assignment, inputs, return schema, tool states, implementation files, and test flow** included above. :contentReference[oaicite:0]{index=0}
-```
