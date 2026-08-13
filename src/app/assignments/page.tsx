@@ -54,6 +54,15 @@ const assignments = [
       { label: "Route Handler (GitHub)", url: "https://github.com/Sawaira-Fareed/flyrank-capstone/blob/main/src/app/(app)/api/chat/route.ts" },
     ],
   },
+   {
+    week: "Week 05",
+    title: "Tool Results and Structured Output in the UI (FE-07)",
+    links: [
+      { label: "Live Demo", url: "https://flyrank-capstone-rosy.vercel.app/" },
+      { label: "Tool Components (GitHub)", url: "https://github.com/Sawaira-Fareed/flyrank-capstone/tree/main/src/components/tools" },
+      { label: "Route Handler (GitHub)", url: "https://github.com/Sawaira-Fareed/flyrank-capstone/blob/main/src/app/api/chat/route.ts" },
+    ],
+  },
 ];
 
 export default function AssignmentsPage() {
