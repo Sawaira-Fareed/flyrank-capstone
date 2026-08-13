@@ -82,6 +82,16 @@ const assignments = [
     { label: "Duration/Easing Note", url: "https://flyrank-capstone-rosy.vercel.app/playground/button" },
   ],
 },
+{
+  week: "Week 06",
+  title: "Testing Pass (FE-09)",
+  links: [
+    { label: "Component Tests (GitHub)", url: "https://github.com/Sawaira-Fareed/flyrank-capstone/tree/main/tests" },
+    { label: "E2E Test (GitHub)", url: "https://github.com/Sawaira-Fareed/flyrank-capstone/blob/main/e2e/primary-flow.spec.ts" },
+    { label: "CI Workflow (GitHub)", url: "https://github.com/Sawaira-Fareed/flyrank-capstone/blob/main/.github/workflows/test.yml" },
+    { label: "Vitest Config", url: "https://github.com/Sawaira-Fareed/flyrank-capstone/blob/main/vitest.config.ts" },
+  ],
+},
 ];
 
 export default function AssignmentsPage() {
