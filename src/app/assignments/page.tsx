@@ -56,13 +56,23 @@ const assignments = [
   },
    {
     week: "Week 05",
-    title: "Tool Results and Structured Output in the UI (FE-07)",
+    title: "Tool Results and Structured Output in the UI ",
     links: [
-      { label: "Live Demo", url: "https://flyrank-capstone-rosy.vercel.app/" },
+      { label: "Live Demo", url: "https://flyrank-capstone-rosy.vercel.app/learn" },
       { label: "Tool Components (GitHub)", url: "https://github.com/Sawaira-Fareed/flyrank-capstone/tree/main/src/components/tools" },
       { label: "Route Handler (GitHub)", url: "https://github.com/Sawaira-Fareed/flyrank-capstone/blob/main/src/app/api/chat/route.ts" },
     ],
   },
+  {
+  week: "Week 05",
+  title: "Error States, Empty States, Edge Cases ",
+  links: [
+    { label: "Live Demo", url: "https://flyrank-capstone-rosy.vercel.app/" },
+    { label: "Error Boundary (GitHub)", url: "https://github.com/Sawaira-Fareed/flyrank-capstone/blob/main/src/app/(app)/error.tsx" },
+    { label: "Loading Skeleton (GitHub)", url: "https://github.com/Sawaira-Fareed/flyrank-capstone/blob/main/src/app/(app)/loading.tsx" },
+    { label: "Learn Page (GitHub)", url: "https://github.com/Sawaira-Fareed/flyrank-capstone/blob/main/src/app/(app)/learn/page.tsx" },
+  ],
+},
 ];
 
 export default function AssignmentsPage() {

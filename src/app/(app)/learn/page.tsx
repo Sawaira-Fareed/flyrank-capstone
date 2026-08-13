@@ -475,11 +475,15 @@ function LearnPageContent() {
 {/* Add this right after — Error state */}
 {error && (
   <div className="flex justify-center">
-    <div className="bg-red-50/60 rounded-2xl px-4 py-3 text-sm text-red-500 flex items-center gap-2">
-      <span>❌ Connection failed</span>
+    <div className="bg-red-50/60 rounded-2xl px-4 py-3 text-sm text-red-500 flex items-center gap-2 flex-col">
+      <div className="flex items-center gap-2">
+        <span>{error?.message?.includes("429") || error?.message?.includes("rate") 
+          ? "⏳ Rate limit reached — please wait a moment" 
+          : "❌ Connection failed"}</span>
+      </div>
       <button 
         onClick={() => regenerate()}
-        className="underline font-semibold text-red-600 hover:text-red-700 ml-2"
+        className="underline font-semibold text-red-600 hover:text-red-700"
       >
         Retry
       </button>
