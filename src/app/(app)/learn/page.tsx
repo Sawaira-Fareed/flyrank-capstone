@@ -13,6 +13,7 @@ import { getUserProjects, getProjectSkills, updateProjectProgress, addBookmark, 
 import Markdown from "react-markdown";
 import BadgePopup from "@/components/badges/BadgePopup";
 import ToolPartRenderer from "@/components/tools/ToolPartRenderer";
+import AnimatedSendButton from "@/components/common/AnimatedSendButton";
 // ─── Wrapper with Suspense ───
 export default function LearnPage() {
   return (
@@ -499,7 +500,14 @@ function LearnPageContent() {
                   {isLoading ? (
                     <button onClick={() => stop()} className="rounded-full bg-red-400 p-2.5 text-white hover:bg-red-500 transition"><StopCircle size={18} /></button>
                   ) : (
-                    <button onClick={handleSend} disabled={!input.trim()} className="rounded-full bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] p-2.5 text-white hover:scale-105 transition disabled:opacity-50"><Send size={18} /></button>
+                    <AnimatedSendButton 
+  onSend={async () => {
+    if (!input.trim()) return false;
+    handleSend();
+    return true;
+  }} 
+  disabled={!input.trim()}
+/>
                   )}
                 </div>
               </div>
