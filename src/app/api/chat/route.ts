@@ -151,7 +151,7 @@ export async function POST(req: Request) {
     const providers = [
       { name: "openrouter", model: openrouter("openai/gpt-4o-mini") },
       { name: "gemini", model: google("gemini-2.0-flash") },
-      { name: "groq", model: groq("llama-3.3-70b-versatile") },
+      { name: "groq", model: groq("qwen3.6-27b") },
     ];
 
     for (const provider of providers) {
@@ -213,7 +213,7 @@ export async function POST(req: Request) {
     {
       name: "groq",
       fn: () => streamText({ 
-        model: groq("llama-3.3-70b-versatile"), 
+        model: groq("qwen3.6-27b"), 
         system: systemPrompt, 
         messages: convertedMessages,
         tools: authUser ? { getLearningContext: getLearningContextTool } : undefined,

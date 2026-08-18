@@ -9,9 +9,6 @@ on:
 jobs:
   component-tests:
     runs-on: ubuntu-latest
-    env:
-      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
     steps:
       - uses: actions/checkout@v4
       
@@ -22,5 +19,5 @@ jobs:
       - name: Install dependencies
         run: npm install --legacy-peer-deps
         
-      - name: Run component tests only
-        run: npx vitest run --dir tests
+      - name: Run component tests
+        run: npx vitest run --dir tests --reporter=verbose

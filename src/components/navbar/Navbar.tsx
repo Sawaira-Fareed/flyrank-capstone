@@ -62,22 +62,23 @@ export default function Navbar() {
           ))}
 
           {/* Resources Dropdown */}
-          <div className="relative"
-            onMouseEnter={() => setResourcesOpen(true)}
-            onMouseLeave={() => setResourcesOpen(false)}>
-            <button className="flex items-center gap-1 font-medium text-slate-700 hover:text-violet-600 transition">
-              Resources <ChevronDown size={16} className={resourcesOpen ? "rotate-180 transition" : "transition"} />
-            </button>
-            {resourcesOpen && (
-              <div className="absolute top-full left-0 mt-2 w-48 rounded-xl bg-white/95 backdrop-blur-xl border border-white/50 shadow-xl z-50 overflow-hidden">
-                <Link href="/assignments" className="block px-4 py-2.5 text-sm text-slate-700 hover:bg-violet-50 hover:text-violet-600 transition">📋 Assignments</Link>
-                <Link href="/playground" className="block px-4 py-2.5 text-sm text-slate-700 hover:bg-violet-50 hover:text-violet-600 transition">🧩 Playground</Link>
-                <Link href="/health" className="block px-4 py-2.5 text-sm text-slate-700 hover:bg-violet-50 hover:text-violet-600 transition">❤️ Health Check</Link>
-                <Link href="/chat" className="block px-4 py-2.5 text-sm text-slate-700 hover:bg-violet-50 hover:text-violet-600 transition">💬 AI Chat</Link>
-                <Link href="/notes" className="block px-4 py-2.5 text-sm text-slate-700 hover:bg-violet-50 hover:text-violet-600 transition">📝 Notes</Link>
-              </div>
-            )}
-          </div>
+          
+            <div className="relative"
+  onMouseEnter={() => setResourcesOpen(true)}
+  onMouseLeave={() => setResourcesOpen(false)}>
+  <button className="flex items-center gap-1 font-medium text-slate-700 hover:text-violet-600 transition py-2">
+    Resources <ChevronDown size={16} className={resourcesOpen ? "rotate-180 transition" : "transition"} />
+  </button>
+  {resourcesOpen && (
+    <div className="absolute top-full left-0 w-48 rounded-xl bg-white/95 backdrop-blur-xl border border-white/50 shadow-xl z-50 overflow-hidden">
+      <Link href="/assignments" className="block px-4 py-2.5 text-sm text-slate-700 hover:bg-violet-50 hover:text-violet-600 transition">📋 Assignments</Link>
+      <Link href="/playground" className="block px-4 py-2.5 text-sm text-slate-700 hover:bg-violet-50 hover:text-violet-600 transition">🧩 Playground</Link>
+      <Link href="/health" className="block px-4 py-2.5 text-sm text-slate-700 hover:bg-violet-50 hover:text-violet-600 transition">❤️ Health Check</Link>
+      <Link href="/chat" className="block px-4 py-2.5 text-sm text-slate-700 hover:bg-violet-50 hover:text-violet-600 transition">💬 AI Chat</Link>
+      <Link href="/notes" className="block px-4 py-2.5 text-sm text-slate-700 hover:bg-violet-50 hover:text-violet-600 transition">📝 Notes</Link>
+    </div>
+  )}
+</div>
         </nav>
 
         {/* Desktop CTA */}
