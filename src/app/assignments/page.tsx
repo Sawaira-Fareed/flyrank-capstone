@@ -84,7 +84,7 @@ const assignments = [
 },
 {
   week: "Week 06",
-  title: "Testing Pass (FE-09)",
+  title: "Testing Pass ",
   links: [
     { label: "Component Tests (GitHub)", url: "https://github.com/Sawaira-Fareed/flyrank-capstone/tree/main/tests" },
     { label: "E2E Test (GitHub)", url: "https://github.com/Sawaira-Fareed/flyrank-capstone/blob/main/e2e/primary-flow.spec.ts" },
@@ -94,7 +94,7 @@ const assignments = [
 },
 {
   week: "Week 07",
-  title: "Your First 3D Experience on the Web (FE-AA2)",
+  title: "Your First 3D Experience on the Web ",
   links: [
     { label: "Live Demo", url: "https://dragon-relic-3d.vercel.app/" },
     { label: "GitHub Repo", url: "https://github.com/Sawaira-Fareed/dragon-relic-3d" },
