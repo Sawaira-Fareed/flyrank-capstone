@@ -75,7 +75,7 @@ const assignments = [
 },
 {
   week: "Week 06",
-  title: "Buttons with a Brain: Motion & State Micro-interactions (FE-AA1)",
+  title: "Buttons with a Brain: Motion & State Micro-interactions ",
   links: [
     { label: "Live Demo", url: "https://flyrank-capstone-rosy.vercel.app/playground/button" },
     { label: "Button Component (GitHub)", url: "https://github.com/Sawaira-Fareed/flyrank-capstone/blob/main/src/components/common/AnimatedSendButton.tsx" },

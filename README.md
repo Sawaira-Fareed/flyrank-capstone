@@ -26,7 +26,7 @@ Frontend AI Engineering Capstone project.
 ```bash
 npm install
 npm run dev
- Yes. I’ll keep it **concise and README-focused**, with the **FE-07 assignment fully included** and without unnecessary project-structure/detail bloat.
+
 ```
 ## ✨ Features
 
