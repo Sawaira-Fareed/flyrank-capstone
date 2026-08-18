@@ -92,6 +92,16 @@ const assignments = [
     { label: "Vitest Config", url: "https://github.com/Sawaira-Fareed/flyrank-capstone/blob/main/vitest.config.ts" },
   ],
 },
+{
+  week: "Week 07",
+  title: "Your First 3D Experience on the Web (FE-AA2)",
+  links: [
+    { label: "Live Demo", url: "https://dragon-relic-3d.vercel.app/" },
+    { label: "GitHub Repo", url: "https://github.com/Sawaira-Fareed/dragon-relic-3d" },
+    { label: "README", url: "https://github.com/Sawaira-Fareed/dragon-relic-3d/blob/main/README.md" },
+    { label: "Source Code (App.jsx)", url: "https://github.com/Sawaira-Fareed/dragon-relic-3d/blob/main/src/App.jsx" },
+  ],
+},
 ];
 
 export default function AssignmentsPage() {
