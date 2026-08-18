@@ -1,6 +1,4 @@
-Here's the updated README with the testing section corrected to reflect that all tests now pass:
 
-```markdown
 # 🌸 BloomLab — AI-Powered Project-Based Learning Platform
 
 **Tagline:** *Learning grows naturally.*
@@ -437,8 +435,4 @@ npm run test:e2e
 # 📜 License
 
 Personal Project.
-```
-
----
-
 
