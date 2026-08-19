@@ -102,6 +102,16 @@ const assignments = [
     { label: "Source Code (App.jsx)", url: "https://github.com/Sawaira-Fareed/dragon-relic-3d/blob/main/src/App.jsx" },
   ],
 },
+{
+  week: "Week 07",
+  title: "Accessibility and Performance Audit (FE-10)",
+  links: [
+    { label: "Live Demo", url: "https://flyrank-capstone-rosy.vercel.app/" },
+    { label: "AUDIT.md", url: "https://github.com/Sawaira-Fareed/flyrank-capstone/blob/main/AUDIT.md" },
+    { label: "Before Lighthouse", url: "https://drive.google.com/file/d/1kiFsMQba9sRF1uJle6okyoyHrkPrWTq-/view?usp=sharing" },
+    { label: "After Lighthouse", url: "https://drive.google.com/file/d/15UiUC61Ouehd1dQgs2Kvep29idL1QZwa/view?usp=sharing" },
+  ],
+},
 ];
 
 export default function AssignmentsPage() {
