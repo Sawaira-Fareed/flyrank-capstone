@@ -233,9 +233,10 @@ export default function GlimpseInside() {
                 className="rounded-2xl border border-white/40 bg-white/25 backdrop-blur-md p-4 text-center flex-1 flex flex-col items-center justify-center"
                 style={{ boxShadow: "0 8px 24px rgba(139,92,246,0.08)" }}
               >
-                <Image
-                  src="/glimpse-character.png"
+               
+                  <Image src="/glimpse-character.png" 
                   alt="Mascot"
+                  loading="lazy" 
                   width={140}
                   height={140}
                   className="object-contain w-28 lg:w-36 h-auto mx-auto"

@@ -92,9 +92,12 @@ export default function Navbar() {
         </div>
 
         {/* Mobile Hamburger */}
-        <button onClick={() => setMobileOpen(true)} className="lg:hidden text-slate-700 p-2">
-          <Menu size={24} />
-        </button>
+        <button 
+  onClick={() => setMobileOpen(true)} 
+  aria-label="Open navigation menu"
+  className="lg:hidden text-slate-700 p-2">
+  <Menu size={24} />
+</button>
       </div>
 
       {/* Mobile Drawer */}
