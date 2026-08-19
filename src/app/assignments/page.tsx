@@ -104,7 +104,7 @@ const assignments = [
 },
 {
   week: "Week 07",
-  title: "Accessibility and Performance Audit (FE-10)",
+  title: "Accessibility and Performance Audit ",
   links: [
     { label: "Live Demo", url: "https://flyrank-capstone-rosy.vercel.app/" },
     { label: "AUDIT.md", url: "https://github.com/Sawaira-Fareed/flyrank-capstone/blob/main/AUDIT.md" },
