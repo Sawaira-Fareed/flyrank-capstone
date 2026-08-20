@@ -112,6 +112,15 @@ const assignments = [
     { label: "After Lighthouse", url: "https://drive.google.com/file/d/15UiUC61Ouehd1dQgs2Kvep29idL1QZwa/view?usp=sharing" },
   ],
 },
+{
+  week: "Week 08",
+  title: "Signature Hero: A Fullscreen Shader ",
+  links: [
+    { label: "Live Demo", url: "https://dragon-relic-3d.vercel.app//" },
+    { label: "GitHub Repo", url: "https://github.com/Sawaira-Fareed/dragon-relic-3d" },
+    { label: "Explaination", url: "https://github.com/Sawaira-Fareed/dragon-relic-3d/blob/main/README.md" },
+  ],
+},
 ];
 
 export default function AssignmentsPage() {
