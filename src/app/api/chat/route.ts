@@ -14,6 +14,28 @@ import {
 
 export const maxDuration = 60;
 
+// ─── Rate Limiting (FE-11) ───
+const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
+const RATE_LIMIT = 20; // 20 requests per user
+const RATE_LIMIT_WINDOW = 60 * 1000; // per minute
+
+function checkRateLimit(userId: string): boolean {
+  const now = Date.now();
+  const record = rateLimitMap.get(userId);
+  
+  if (!record || now > record.resetTime) {
+    rateLimitMap.set(userId, { count: 1, resetTime: now + RATE_LIMIT_WINDOW });
+    return true;
+  }
+  
+  if (record.count >= RATE_LIMIT) {
+    return false;
+  }
+  
+  record.count++;
+  return true;
+}
+
 const openrouter = createOpenAI({
   baseURL: "https://openrouter.ai/api/v1",
   apiKey: process.env.OPENROUTER_API_KEY,
@@ -30,7 +52,6 @@ const getLearningContextTool = tool({
     userId: z.string().describe("The user's Supabase UUID. If unknown, send empty string."),
   }),
   execute: async ({ userId }) => {
-    // If userId is empty, get from auth
     let actualUserId = userId;
     if (!actualUserId || actualUserId.trim() === "") {
       const supabaseServer = await createClient();
@@ -44,7 +65,6 @@ const getLearningContextTool = tool({
     
     const supabase = await createClient();
     
-    // Fetch projects
     const { data: projects } = await supabase
       .from("projects")
       .select("*")
@@ -52,7 +72,6 @@ const getLearningContextTool = tool({
       .order("created_at", { ascending: false })
       .limit(5);
     
-    // Fetch skills
     const projectIds = (projects || []).map(p => p.id);
     let skills: any[] = [];
     if (projectIds.length > 0) {
@@ -63,14 +82,12 @@ const getLearningContextTool = tool({
       skills = skillsData || [];
     }
     
-    // Fetch user stats
     const { data: userData } = await supabase
       .from("users")
       .select("streak, xp")
       .eq("id", actualUserId)
       .single();
     
-    // Fetch badges
     const { data: badges } = await supabase
       .from("user_badges")
       .select("*")
@@ -78,7 +95,6 @@ const getLearningContextTool = tool({
       .order("earned_at", { ascending: false })
       .limit(5);
     
-    // Fetch recent lessons
     const { data: lessons } = await supabase
       .from("lessons")
       .select("*")
@@ -118,9 +134,19 @@ export async function POST(req: Request) {
   const supabase = await createClient();
   const { data: { user: authUser } } = await supabase.auth.getUser();
 
+  // ─── Rate Limiting Check (FE-11) ───
+  if (authUser) {
+    const allowed = checkRateLimit(authUser.id);
+    if (!allowed) {
+      return new Response(
+        JSON.stringify({ error: "Rate limit exceeded. Please wait a minute before sending more messages." }),
+        { status: 429, headers: { "Content-Type": "application/json" } }
+      );
+    }
+  }
+
   let systemPrompt = ELSA_SYSTEM_PROMPT;
   
-  // Tool usage rule
   systemPrompt += "\n\nIMPORTANT TOOL RULE: Only use the getLearningContext tool when the user explicitly asks about their progress, stats, learning summary, streak, XP, or achievements. For lesson questions, project help, or regular chat, respond with text only. Do NOT call the tool unless the user asks for their data.";
   
   let isSkillMapRequest = false;

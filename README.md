@@ -1,11 +1,14 @@
+# 🌸 BloomLab
 
-# 🌸 BloomLab — AI-Powered Project-Based Learning Platform
+> **Learning grows naturally.**
 
-**Tagline:** *Learning grows naturally.*
+**BloomLab** is an AI-powered, project-based learning platform designed to help developers learn by building real projects.
 
-BloomLab is an AI-powered coding learning platform where learners learn by **building real projects**, guided by **Elsa**, their personal AI mentor.
+Instead of following a fixed curriculum, learners describe what they want to build. **Elsa**, their AI learning mentor, analyzes the project, identifies the required skills, creates a personalized learning path, and guides the learner through focused 15-minute lessons.
 
-Instead of passive theory, learners choose something they want to build, Elsa identifies the skills required, creates a personalized learning path, and guides the learner through focused 15-minute lessons until the project becomes portfolio-ready.
+The goal is simple: **turn learning into something you build, not something you merely consume.**
+
+---
 
 ## 🚀 Live Demo
 
@@ -17,25 +20,25 @@ Instead of passive theory, learners choose something they want to build, Elsa id
 
 ### 🌱 Project-First Learning
 
-- Describe the project you want to build.
-- Elsa generates the required skills.
-- Skills are organized into a personalized Skill Map.
-- Learners progress through Active, Completed, and Locked skills.
-- Every lesson contributes toward the final project.
+* Describe a project you want to build.
+* Elsa identifies the skills required to complete it.
+* A personalized skill map is generated automatically.
+* Skills progress through `Locked → Active → Completed`.
+* Every lesson contributes toward project completion.
 
 ### 🤖 Elsa — AI Learning Mentor
 
-Elsa provides:
+Elsa provides context-aware assistance throughout the learning journey.
 
-- Project-specific guidance
-- Lesson assistance
-- Continuation prompts
-- Feature suggestions
-- Skill-map generation
-- Learning-progress summaries
-- Context-aware responses
+* Project-specific guidance
+* Skill and lesson assistance
+* Learning-progress summaries
+* Feature suggestions
+* Continuation prompts
+* Tool calling for real application data
+* Multi-provider AI fallback
 
-AI providers use fallback support:
+**AI provider chain:**
 
 ```text
 OpenRouter → Groq → Gemini
@@ -43,154 +46,212 @@ OpenRouter → Groq → Gemini
 
 ### 📚 15-Minute Lessons
 
-Learning is divided into focused lessons designed around the learner's daily goal.
+Lessons are designed around short, focused learning sessions.
 
-Progress is tracked through:
+The platform tracks:
 
-- Completed lessons
-- Lesson scores
-- Skill completion
-- Project progress
-- XP
-- Daily streaks
-
-### 🗺️ Skill Map
-
-Each project receives a visual learning path:
-
-```text
-Locked → Active → Completed
-```
+* Lessons completed
+* Lesson scores
+* Skill completion
+* Project progress
+* XP
+* Daily goals
+* Learning streaks
 
 ### 💬 Persistent Learning Chat
 
-Conversations are saved per skill so learners can return later and continue their learning.
+Learning conversations are persisted per skill, allowing learners to:
 
----
+* Continue previous conversations
+* Review earlier explanations
+* Ask follow-up questions
+* Resume learning without losing context
 
-# 🎮 Gamification
+### 🏅 Certificates
 
-BloomLab turns learning progress into a lightweight progression system.
+When a project is completed, learners can create a certificate from an AI-generated suggestion.
 
-## ⭐ XP
+Supported actions:
 
-- **+50 XP** — lesson completion
-- **+200 XP** — project completion
-- Additional XP — badge rewards
+* Generate certificate suggestions
+* Edit certificate content
+* Upload screenshots
+* Generate downloadable PNG certificates
+* Archive certificates
+* View, edit, or delete certificates
 
-## 🔥 Streaks
+### 🔖 Resources & Bookmarks
 
-Daily activity contributes to the learner's streak.
+Learners can save useful resources while studying.
 
-Missing activity resets the streak according to the application's streak logic.
+Resources are:
 
-## 🏆 Badges
+* Linked to the current project
+* Stored persistently
+* Editable and removable
+* Displayed within the Archive
 
-| Badge | Requirement |
-| --- | --- |
-| 🌱 First Step | Complete 1 lesson |
-| 🌿 Code Gardener | Complete 5 lessons |
-| 📚 Knowledge Seeker | Complete 10 lessons |
-| 🦉 Scholar Owl | Complete 25 lessons |
-| ⭐ Perfect Score | Score 90%+ on a lesson |
-| 🎯 Precision Master | Get 5 perfect scores |
-| 🚀 Project Starter | Create your first project |
-| 🏗️ Builder | Create 3 projects |
-| 🏆 Project Master | Create 5 projects |
-| 🚢 Ship It! | Complete your first project |
-| 🔥 Triple Threat | Complete 3 projects |
-| 🌟 Consistent | Reach a 3-day streak |
-| 🔥 Weekly Warrior | Reach a 7-day streak |
-| 👑 Monthly Master | Reach a 30-day streak |
+### 📊 Dashboard
 
-Badge celebrations include custom artwork, animations, sparkles, and sound.
+The dashboard provides a centralized view of learning activity.
 
----
+Includes:
 
-# 🌳 Projects
+* Current streak
+* Lessons completed
+* Projects
+* XP
+* Monthly activity calendar
+* Earned badges
+* Elsa's personalized notes
 
-Projects are the center of the BloomLab learning experience.
+Calendar states include:
 
-Learners can:
+* 🟣 Active day
+* 🔴 Missed day
+* 🩷 Current day
 
-- Create projects from the Garden or Projects page.
-- Generate skills automatically with AI.
-- Filter projects by **All / Active / Saved / Done**.
-- Save unfinished projects for later.
-- Track project progress.
-- View project-specific skills and resources.
-- Complete projects and receive XP.
+### 🎮 Gamification
 
----
+| System        | Behavior                                                  |
+| ------------- | --------------------------------------------------------- |
+| XP            | +50 per lesson, +200 per completed project, badge rewards |
+| Streaks       | Automatically tracked and reset after a missed day        |
+| Badges        | 14 achievement badges                                     |
+| Badge Popup   | Sparkle and flip animation with optional sound            |
+| Notifications | Triggered by relevant learning achievements               |
 
-# 🏅 Certificates
+### 🌸 Gamified 404
 
-Completed projects can receive a generated certificate.
+BloomLab includes a themed 404 experience with a small interactive quest.
 
-Features include:
-
-- AI-generated certificate suggestions
-- Editable project description and features
-- Project screenshot upload
-- Canvas-generated PNG certificate
-- View certificates
-- Edit certificates
-- Delete certificates
-
----
-
-# 🔖 Resources & Bookmarks
-
-Learners can save useful learning resources directly from the Learn experience.
-
-Resources support:
-
-- Save
-- Edit
-- Delete
-- Project association
-- Resource type
-- URL
-- Description
-
-Saved resources are also available from project details and the Archive.
-
----
-
-# 📊 Dashboard
-
-The Dashboard provides a centralized view of learning activity.
-
-It includes:
-
-- Current streak
-- Completed lessons
-- Projects
-- XP
-- Monthly activity calendar
-- Badges
-- Learning progress
-- Elsa's learning notes
-
-The calendar distinguishes active, missed, and current days.
-
----
-
-# 🔧 FE-07 — `getLearningContext`
-
-FE-07 is BloomLab's **AI learning-context tool**.
-
-It allows Elsa to retrieve the authenticated learner's real learning data from Supabase when the learner explicitly asks about their progress.
-
-## Example Requests
+Implementation:
 
 ```text
-Show my learning summary
-What's my progress?
-My stats
+src/app/not-found.tsx
 ```
 
-## Input
+---
+
+# 🏗️ Architecture
+
+BloomLab uses a Next.js App Router architecture with Supabase as the persistence layer and an AI orchestration layer for Elsa.
+
+```text
+┌─────────────────────┐
+│       Learner       │
+└──────────┬──────────┘
+           │
+           ▼
+┌─────────────────────┐
+│    Next.js App      │
+│  App Router + UI    │
+└──────────┬──────────┘
+           │
+           ▼
+┌─────────────────────┐
+│      useChat()      │
+└──────────┬──────────┘
+           │
+           ▼
+┌─────────────────────┐
+│     /api/chat       │
+│                     │
+│  Intent Detection   │
+│  Tool Execution     │
+│  AI Provider Chain  │
+└──────────┬──────────┘
+           │
+      ┌────┴─────┐
+      │          │
+      ▼          ▼
+┌──────────┐  ┌──────────────┐
+│ Supabase │  │ AI Providers │
+│          │  │              │
+│ Postgres │  │ OpenRouter   │
+│ Storage  │  │ Groq         │
+│ Auth     │  │ Gemini       │
+└──────────┘  └──────────────┘
+```
+
+### Core Data Flow
+
+```text
+Create Project
+      ↓
+AI analyzes project
+      ↓
+Skills generated
+      ↓
+Skill Map stored in Supabase
+      ↓
+Learner selects a skill
+      ↓
+Chat with Elsa
+      ↓
+Lesson completed
+      ↓
+XP + streak + progress updated
+      ↓
+Badge / notification checks
+      ↓
+Project completed
+      ↓
+Certificate becomes available
+```
+
+---
+
+# 🧠 AI Architecture
+
+Elsa uses a provider fallback strategy to improve reliability while keeping infrastructure costs low.
+
+```text
+                    ┌──────────────┐
+                    │ Elsa Request │
+                    └──────┬───────┘
+                           │
+                           ▼
+                  ┌─────────────────┐
+                  │    OpenRouter   │
+                  └────────┬────────┘
+                           │
+                    unavailable?
+                           │
+                           ▼
+                  ┌─────────────────┐
+                  │      Groq       │
+                  └────────┬────────┘
+                           │
+                    unavailable?
+                           │
+                           ▼
+                  ┌─────────────────┐
+                  │     Gemini      │
+                  └─────────────────┘
+```
+
+This allows the application to continue operating when a primary provider is unavailable or reaches its usage limits.
+
+---
+
+# 🔧 AI Tooling
+
+## `getLearningContext`
+
+Elsa can retrieve the learner's real learning data from Supabase when the conversation requires it.
+
+Example prompts:
+
+```text
+"Show my learning summary."
+
+"What's my progress?"
+
+"Show me my stats."
+```
+
+### Input
 
 ```typescript
 {
@@ -198,11 +259,9 @@ My stats
 }
 ```
 
-The `userId` represents the learner's Supabase UUID.
+If `userId` is empty, the authenticated user is used.
 
-If it is empty, the authenticated Supabase user is used.
-
-## Return Data
+### Output
 
 ```typescript
 {
@@ -224,18 +283,16 @@ If it is empty, the authenticated Supabase user is used.
 }
 ```
 
-## Tool States
+### Tool States
 
-| State | UI |
-| --- | --- |
-| `input-streaming` | 🔧 Elsa is deciding how to help... |
-| `input-available` | 🔧 Fetching your learning summary... |
-| `output-available` | 📊 Learning Summary Card |
-| `output-error` | ❌ Error + Retry |
+| State              | UI                                   |
+| ------------------ | ------------------------------------ |
+| `input-streaming`  | 🔧 Elsa is deciding how to help...   |
+| `input-available`  | 🔧 Fetching your learning summary... |
+| `output-available` | 📊 Learning Summary Card             |
+| `output-error`     | ❌ Error with retry option            |
 
-## FE-07 Implementation
-
-The main FE-07 files are:
+### Implementation
 
 ```text
 src/app/api/chat/route.ts
@@ -245,194 +302,287 @@ src/components/tools/ToolPartRenderer.tsx
 
 ---
 
-# 🧪 Testing
+# 🛠️ Tech Stack
 
-## Component Tests (Vitest + React Testing Library)
+| Category           | Technology                     |
+| ------------------ | ------------------------------ |
+| Framework          | Next.js 16                     |
+| Routing            | App Router                     |
+| Bundler            | Turbopack                      |
+| Language           | TypeScript                     |
+| Styling            | Tailwind CSS                   |
+| Animation          | Framer Motion                  |
+| Authentication     | Supabase Auth                  |
+| Database           | Supabase PostgreSQL            |
+| Storage            | Supabase Storage               |
+| Primary AI         | OpenRouter                     |
+| Primary Model      | GPT-4o Mini                    |
+| AI Fallback        | Groq                           |
+| Fallback Model     | Qwen3.6 27B                    |
+| Secondary Fallback | Gemini 2.0 Flash               |
+| AI SDK             | Vercel AI SDK                  |
+| Icons              | Lucide React                   |
+| Markdown           | react-markdown                 |
+| Testing            | Vitest + React Testing Library |
+| E2E Testing        | Playwright                     |
+| Deployment         | Vercel                         |
 
-**Status: ✅ All passing**
+---
+
+# 🛡️ Security & Reliability
+
+## Rate Limiting
+
+The `/api/chat` endpoint is protected by per-user rate limiting.
 
 ```text
-✓ LearningSummaryCard — 5 tests
-✓ BadgePopup — 4 tests
-✓ AnimatedSendButton — 4 tests
-
-Test Files: 3 passed (3)
-Tests: 13 passed (13)
+Limit: 20 requests / minute / user
 ```
 
-Run:
+When the limit is exceeded, the API returns:
+
+```http
+429 Too Many Requests
+```
+
+with a rate-limit error message.
+
+### Current Implementation
+
+Rate limiting is currently implemented in memory.
+
+This is appropriate for the current demo/internship deployment, but it is **not suitable for horizontally scaled production infrastructure** because each server instance maintains its own rate-limit state.
+
+### Production Improvement
+
+A distributed store such as Redis should be used for production-scale rate limiting.
+
+---
+
+# 🧪 Testing
+
+BloomLab uses unit/component testing and browser-based end-to-end testing.
+
+## Component Tests
+
+**13 tests passing**
 
 ```bash
 npm run test
 ```
 
-## E2E Tests (Playwright)
+Testing stack:
 
-**Status: ✅ All passing**
+* Vitest
+* React Testing Library
 
-```text
-✓ landing page loads and shows hero
-✓ login page loads
-✓ playground button page shows animated button
+## End-to-End Tests
 
-3 passed (7.3s)
-```
+**3 tests passing**
 
-Run:
+Start the development server:
 
 ```bash
-# Terminal 1
 npm run dev
+```
 
-# Terminal 2
+Then, in another terminal:
+
+```bash
 npm run test:e2e
 ```
 
-## CI Pipeline
+Testing stack:
 
-GitHub Actions runs component tests on every push to `main`.
+* Playwright
 
-Workflow: `.github/workflows/test.yml`
+## Continuous Integration
 
-## FE-07 Tool Test
+GitHub Actions runs the component test suite on every push to `main`.
 
-1. Open the **Learn** page.
-2. Ask Elsa:
-
-```text
-Show my learning summary
-```
-
-3. Elsa calls `getLearningContext`.
-4. The **Learning Summary Card** displays the learner's real data.
-
-## Error State Test
-
-1. Open browser DevTools
-2. Go to Network
-3. Enable Offline
-4. Ask Elsa a question
-5. Verify the connection error and Retry action
-
----
-
-### Automatic Progression
+Workflow:
 
 ```text
-Lesson Complete
-    ↓
-+50 XP
-Streak update
-Notification
-Badge check
-
-Badge Earned
-    ↓
-XP reward
-Notification
-Streak update
-
-Project Created
-    ↓
-Notification
-Badge check
-Streak update
-
-Project Completed
-    ↓
-+200 XP
-Notification
-Badge check
+.github/workflows/test.yml
 ```
 
 ---
 
-# 🛠️ Tech Stack
+# ⚙️ Getting Started
 
-| Category | Technology |
-| --- | --- |
-| Framework | Next.js 16 — App Router + Turbopack |
-| Language | TypeScript |
-| Styling | Tailwind CSS + Framer Motion |
-| Authentication | Supabase Auth |
-| Database | Supabase PostgreSQL |
-| Storage | Supabase Storage |
-| Primary AI | OpenRouter → GPT-4o Mini |
-| AI Fallback | Groq → Llama 3.3 70B |
-| AI Last Resort | Gemini 2.0 Flash |
-| AI SDK | Vercel AI SDK |
-| Icons | Lucide React |
-| Markdown | react-markdown |
-| Deployment | Vercel |
+## Prerequisites
+
+Make sure the following are installed/configured:
+
+* Node.js 18+
+* npm
+* Supabase project
+* OpenRouter API key
+* Groq API key
+* Gemini API key
+
+## Installation
+
+Clone the repository and install dependencies:
+
+```bash
+npm install --legacy-peer-deps
+```
+
+Start the development server:
+
+```bash
+npm run dev
+```
+
+The application will be available through the local Next.js development server.
 
 ---
 
-# 🌸 404 Experience
+# 🔐 Environment Variables
 
-BloomLab includes a themed 404 gamified experience instead of a plain error screen.
+Create a `.env.local` file in the project root:
 
-Implementation:
+```env
+OPENROUTER_API_KEY=...
+GROQ_API_KEY=...
+GOOGLE_GENERATIVE_AI_API_KEY=...
 
-```text
-src/app/not-found.tsx
+NEXT_PUBLIC_SUPABASE_URL=...
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=...
 ```
+
+> Never commit `.env.local` or expose server-side API keys in client-side code.
+
+---
+
+# 📜 Available Scripts
+
+| Command            | Description              |
+| ------------------ | ------------------------ |
+| `npm run dev`      | Start development server |
+| `npm run build`    | Create production build  |
+| `npm run start`    | Start production server  |
+| `npm run test`     | Run component tests      |
+| `npm run test:e2e` | Run Playwright E2E tests |
 
 ---
 
 # 🎨 Design System
 
-| Element | Value |
-| --- | --- |
-| Primary | `#8B5CF6` Violet |
-| Secondary | `#F472B6` Pink |
-| Accent | `#87CEEB` Sky Blue |
-| Background | Sky Blossom gradient |
-| Cards | Glassmorphism |
-| Headings | Space Grotesk |
-| Body | Manrope |
-| Corners | 24–28px |
-| Shadows | Soft purple-tinted |
+BloomLab uses a soft, garden-inspired visual language built around glassmorphism and rounded surfaces.
+
+| Element       | Value                |
+| ------------- | -------------------- |
+| Primary       | `#8B5CF6` Violet     |
+| Secondary     | `#F472B6` Pink       |
+| Accent        | `#87CEEB` Sky Blue   |
+| Background    | Sky Blossom gradient |
+| Cards         | Glassmorphism        |
+| Heading Font  | Space Grotesk        |
+| Body Font     | Manrope              |
+| Border Radius | 24–28px              |
+
+The visual system is intended to make the platform feel approachable while maintaining a modern developer-product aesthetic.
 
 ---
 
-# 👩💻 Elsa
+# 🤖 Development with AI
 
-Elsa is BloomLab's AI mentor.
+AI was used throughout development as an engineering assistant rather than as a replacement for implementation and verification.
 
-Her personality is designed around a warm, garden-themed learning experience. She is encouraging, concise, and focused on helping learners complete their projects.
+| Area               | AI Contribution                  | Engineering Work                      |
+| ------------------ | -------------------------------- | ------------------------------------- |
+| Elsa system prompt | Initial prompt drafting          | Personality, behavior, and refinement |
+| Skill generation   | JSON/schema suggestions          | Validation and implementation         |
+| AI tools           | Tool structure suggestions       | Zod schema and execution logic        |
+| Badge animations   | Framer Motion implementation     | Timing and UX refinement              |
+| Certificates       | Canvas implementation assistance | Layout and CORS debugging             |
+| Testing            | Test-case suggestions            | Implementation and verification       |
+
+### Engineering Principles
+
+Key implementation decisions were based on:
+
+* Reliability
+* Simplicity
+* Maintainability
+* Low infrastructure cost
+* Clear separation between UI, AI, and persistence
+* Real application data instead of simulated responses
 
 ---
 
-# 🚀 Getting Started
+# 📌 Engineering Decisions
 
-## Prerequisites
+| Decision                       | Rationale                                                                 |
+| ------------------------------ | ------------------------------------------------------------------------- |
+| Next.js App Router             | Full-stack React architecture with server-side capabilities               |
+| Supabase                       | PostgreSQL, authentication, storage, and database tooling in one platform |
+| Multi-provider AI              | Improves resilience against provider limits and outages                   |
+| Vercel AI SDK                  | Simplifies streaming and AI tool integration                              |
+| 15-minute lessons              | Keeps learning sessions focused and measurable                            |
+| Persistent skill conversations | Allows learners to continue learning without losing context               |
+| Tool calling                   | Enables Elsa to work with real learner data                               |
+| Glassmorphism                  | Supports the garden-inspired product identity                             |
 
-- Node.js 18+
-- Supabase account
-- OpenRouter API key
-- Groq API key
-- Gemini API key
+---
 
-## Installation
+# ⚠️ Known Limitations
 
-```bash
-npm install --legacy-peer-deps
-npm run dev
+| Limitation              | Impact                                                            |
+| ----------------------- | ----------------------------------------------------------------- |
+| In-memory rate limiting | State resets on server restart and is not shared across instances |
+| PNG-only certificates   | No PDF export currently available                                 |
+| Badge sound             | May be blocked by browser autoplay policies                       |
+| Streaming cancellation  | Stopped responses cannot currently be resumed                     |
+| AI provider dependency  | Application behavior depends on external AI APIs                  |
+
+---
+
+# 🔮 Roadmap
+
+* [ ] Distributed Redis-based rate limiting
+* [ ] PDF certificate export
+* [ ] Social certificate sharing
+* [ ] Mobile push notifications
+* [ ] Offline learning support
+* [ ] Improved streaming resume support
+* [ ] More learning analytics
+* [ ] Expanded badge and achievement system
+
+---
+
+# 📁 Project Structure
+
+A simplified view of the application structure:
+
+```text
+src/
+├── app/
+│   ├── api/
+│   │   └── chat/
+│   │       └── route.ts
+│   ├── not-found.tsx
+│   └── ...
+│
+├── components/
+│   ├── tools/
+│   │   ├── LearningSummaryCard.tsx
+│   │   └── ToolPartRenderer.tsx
+│   └── ...
+│
+└── ...
 ```
 
-## Run Tests
+---
 
-```bash
-# Component tests
-npm run test
+# 📄 License
 
-# E2E tests (requires dev server)
-npm run test:e2e
-```
+This project was developed as a personal project for the **FlyRank Frontend AI Engineering Internship**.
 
 ---
 
-# 📜 License
+## 🌸 BloomLab
 
-Personal Project.
-
+> **Build projects. Learn skills. Grow naturally.**
