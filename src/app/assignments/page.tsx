@@ -121,6 +121,17 @@ const assignments = [
     { label: "Explaination", url: "https://github.com/Sawaira-Fareed/dragon-relic-3d/blob/main/README.md" },
   ],
 },
+{
+  week: "Week 08",
+  title: "Ship It — Production AI Product ",
+  links: [
+    { label: "Live Demo", url: "https://flyrank-capstone-rosy.vercel.app/" },
+    { label: "Watch Demo Video", url: "https://app.chatcut.io/v/I1feQ6h9A4ka" },
+    { label: "GitHub Repo", url: "https://github.com/Sawaira-Fareed/flyrank-capstone" },
+    { label: "README", url: "https://github.com/Sawaira-Fareed/flyrank-capstone/blob/main/README.md" },
+    { label: "AUDIT.md", url: "https://github.com/Sawaira-Fareed/flyrank-capstone/blob/main/AUDIT.md" },
+  ],
+},
 ];
 
 export default function AssignmentsPage() {
