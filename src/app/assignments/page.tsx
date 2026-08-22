@@ -132,6 +132,20 @@ const assignments = [
     { label: "AUDIT.md", url: "https://github.com/Sawaira-Fareed/flyrank-capstone/blob/main/AUDIT.md" },
   ],
 },
+{
+  week: "Week 08",
+  title: "Capstone Project (BloomLab) 🏆",
+  isCapstone: true,
+  links: [
+    { label: "Live Application", url: "https://flyrank-capstone-rosy.vercel.app" },
+    { label: "Source Repository", url: "https://github.com/Sawaira-Fareed/flyrank-capstone" },
+    { label: "SRS Document", url: "https://docs.google.com/document/d/1ZGEtabTkID7Zm853HJJcpIsyRW5-bM-J/edit?usp=sharing" },
+    { label: "Capstone Details", url: "https://docs.google.com/document/d/17Xmu0OYGZs-7i9S4yo-fHzx4MpFAaTUW/edit?usp=sharing" },
+    { label: "Demo Video", url: "https://drive.google.com/file/d/1jG27MOanEfgjnmH6KiXiGwQ135nCCQQy/view?usp=sharing" },
+    { label: "Walkthrough 1", url: "https://drive.google.com/file/d/1ACiqYXD9fiBnLmFP3UcT9bQn2gCGgWl-/view?usp=sharing" },
+    { label: "Walkthrough 2", url: "https://drive.google.com/file/d/15HS-RGN1pNA9PDBUr9FbPK2YIdpwTKpT/view?usp=sharing" },
+  ],
+},
 ];
 
 export default function AssignmentsPage() {
